@@ -1,0 +1,28 @@
+export enum EUserRole {
+  ADMIN = "admin",
+  EMPLOYEE = "employee",
+}
+
+export enum EProjectStatus {
+  ACTIVE = "active",
+  COMPLETED = "completed",
+  ARCHIVED = "archived",
+}
+
+export enum ETicketStatus {
+  BACKLOG = "backlog",
+  TODO = "todo",
+  IN_PROGRESS = "in_progress",
+  IN_REVIEW = "in_review",
+  COMPLETED = "completed",
+}
+
+export enum ETicketPriority {
+  LOW = "low",
+  MEDIUM = "medium",
+  HIGH = "high",
+}
+
+export enum EPlatformType {
+  WEB = "web",
+}
