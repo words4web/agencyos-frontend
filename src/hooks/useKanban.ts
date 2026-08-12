@@ -42,7 +42,11 @@ export function useKanban() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [createError, setCreateError] = useState("");
 
-  const [selectedTicket, setSelectedTicket] = useState<ITicket | null>(null);
+  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
+
+  const selectedTicket = selectedTicketId
+    ? tickets?.find((t) => t?._id === selectedTicketId) || null
+    : null;
 
   const searchParams = useSearchParams();
   const ticketIdParam = searchParams.get("ticketId");
@@ -52,7 +56,7 @@ export function useKanban() {
       const match = tickets?.find((t) => t?._id === ticketIdParam);
       if (match) {
         setTimeout(() => {
-          setSelectedTicket(match);
+          setSelectedTicketId(match?._id);
         }, 0);
       }
     }
@@ -89,8 +93,8 @@ export function useKanban() {
       {
         onSuccess: (response) => {
           const updated = response.data?.data;
-          if (updated && selectedTicket?._id === ticketId) {
-            setSelectedTicket(null);
+          if (updated && selectedTicketId === ticketId) {
+            setSelectedTicketId(null);
           }
           toast.success("Ticket updated successfully!");
         },
@@ -106,21 +110,14 @@ export function useKanban() {
 
   const handleAddComment = (values: AddCommentFormValues) => {
     if (!selectedTicket) return;
-    addCommentMutation.mutate(
-      { ticketId: selectedTicket._id, payload: { content: values.content } },
-      {
-        onSuccess: (response) => {
-          const updatedTicket = response.data?.data;
-          if (updatedTicket) {
-            setSelectedTicket(updatedTicket);
-          }
-        },
-      },
-    );
+    addCommentMutation.mutate({
+      ticketId: selectedTicket._id,
+      payload: { content: values.content },
+    });
   };
 
   const handleCloseDetails = () => {
-    setSelectedTicket(null);
+    setSelectedTicketId(null);
     router.replace("/kanban");
   };
 
@@ -145,7 +142,8 @@ export function useKanban() {
     setIsCreateOpen,
     createError,
     selectedTicket,
-    setSelectedTicket,
+    setSelectedTicket: (ticket: ITicket | null) =>
+      setSelectedTicketId(ticket ? ticket._id : null),
     handleCloseDetails,
     handleCreateTicket,
     handleUpdateTicket,
