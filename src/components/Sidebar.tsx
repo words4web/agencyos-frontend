@@ -51,6 +51,12 @@ export const Sidebar: React.FC = () => {
       visible: true,
     },
     {
+      name: "My Projects",
+      path: ROUTES.PROJECTS,
+      icon: LayoutDashboard,
+      visible: !isAdmin,
+    },
+    {
       name: "Projects",
       path: ROUTES.ADMIN_PROJECTS,
       icon: LayoutDashboard,

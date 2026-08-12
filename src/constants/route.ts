@@ -5,6 +5,7 @@ export const ROUTES = {
 
   // Authenticated / Dashboard routes
   KANBAN: "/kanban",
+  PROJECTS: "/projects",
   ADMIN_PROJECTS: "/admin/projects",
   ADMIN_EMPLOYEES: "/admin/employees",
   PROFILE: "/profile",

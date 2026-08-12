@@ -11,6 +11,8 @@ export const API_ROUTES = {
     BASE: "/api/projects",
     EMPLOYEES: (id: string) => `/api/projects/${id}/employees`,
     ASSETS: (id: string) => `/api/projects/${id}/assets`,
+    ASSET_DETAIL: (projectId: string, assetId: string) =>
+      `/api/projects/${projectId}/assets/${assetId}`,
   },
   TICKETS: {
     BASE: "/api/tickets",

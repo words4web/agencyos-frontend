@@ -64,3 +64,37 @@ export const useAddAsset = () => {
     },
   });
 };
+
+export const useUpdateAsset = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (variables: {
+      projectId: string;
+      assetId: string;
+      payload: Partial<AddAssetPayload>;
+    }) => {
+      return projectService.updateAsset(
+        variables.projectId,
+        variables.assetId,
+        variables.payload,
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+  });
+};
+
+export const useDeleteAsset = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (variables: { projectId: string; assetId: string }) => {
+      return projectService.deleteAsset(variables.projectId, variables.assetId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+  });
+};

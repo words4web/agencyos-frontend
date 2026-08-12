@@ -34,4 +34,24 @@ export const projectService = {
   ): Promise<AxiosResponse<{ success: boolean; data: IProject }>> => {
     return axiosInstance.put(API_ROUTES.PROJECTS.ASSETS(projectId), payload);
   },
+
+  updateAsset: async (
+    projectId: string,
+    assetId: string,
+    payload: Partial<AddAssetPayload>,
+  ): Promise<AxiosResponse<{ success: boolean; data: IProject }>> => {
+    return axiosInstance.put(
+      API_ROUTES.PROJECTS.ASSET_DETAIL(projectId, assetId),
+      payload,
+    );
+  },
+
+  deleteAsset: async (
+    projectId: string,
+    assetId: string,
+  ): Promise<AxiosResponse<{ success: boolean; data: IProject }>> => {
+    return axiosInstance.delete(
+      API_ROUTES.PROJECTS.ASSET_DETAIL(projectId, assetId),
+    );
+  },
 };

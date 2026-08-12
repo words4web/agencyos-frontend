@@ -10,6 +10,8 @@ import { ProjectCard } from "@/components/project/ProjectCard";
 import { CreateProjectModal } from "@/forms/project/CreateProjectModal";
 import { AllocateTeamModal } from "@/forms/project/AllocateTeamModal";
 import { AddAssetModal } from "@/forms/project/AddAssetModal";
+import { EditAssetModal } from "@/forms/project/EditAssetModal";
+import { IProjectAsset } from "@/types/project/project.types";
 
 export default function ProjectsPage() {
   const { data: projects = [] } = useGetProjects();
@@ -18,6 +20,9 @@ export default function ProjectsPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [activeProject, setActiveProject] = useState<Project | null>(null);
   const [assetProjectId, setAssetProjectId] = useState<string>("");
+
+  const [editAsset, setEditAsset] = useState<IProjectAsset | null>(null);
+  const [editProjectId, setEditProjectId] = useState<string>("");
 
   return (
     <>
@@ -46,6 +51,10 @@ export default function ProjectsPage() {
                 project={proj}
                 onAllocateClick={(project) => setActiveProject(project)}
                 onAddAssetClick={(projectId) => setAssetProjectId(projectId)}
+                onEditAssetClick={(projectId, asset) => {
+                  setEditProjectId(projectId);
+                  setEditAsset(asset);
+                }}
               />
             ))
           )}
@@ -69,6 +78,16 @@ export default function ProjectsPage() {
         isOpen={!!assetProjectId}
         onClose={() => setAssetProjectId("")}
         projectId={assetProjectId}
+      />
+
+      <EditAssetModal
+        isOpen={!!editAsset}
+        onClose={() => {
+          setEditAsset(null);
+          setEditProjectId("");
+        }}
+        projectId={editProjectId}
+        asset={editAsset}
       />
     </>
   );

@@ -3,6 +3,7 @@ import { EProjectStatus } from "@/enums";
 import { CreateProjectFormValues } from "@/schemas/project/project.schema";
 
 export interface IProjectAsset {
+  _id?: string;
   name: string;
   url: string;
   category: string;
@@ -46,6 +47,7 @@ export interface ProjectCardProps {
   project: IProject;
   onAllocateClick: (project: IProject) => void;
   onAddAssetClick: (projectId: string) => void;
+  onEditAssetClick?: (projectId: string, asset: IProjectAsset) => void;
 }
 
 export interface AllocateTeamModalProps {
@@ -65,4 +67,11 @@ export interface CreateProjectFormProps {
   onCancel: () => void;
   serverError?: string;
   isPending?: boolean;
+}
+
+export interface EditAssetModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  projectId: string;
+  asset: IProjectAsset | null;
 }
