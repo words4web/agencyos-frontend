@@ -126,7 +126,7 @@ frontend/
 
 - Exposes a custom page-level hook `useKanban()` that acts as the single entry point for all Kanban board interaction logic.
 - Manages state for filters, selected tickets, creation modal display toggles, query cache updates, and mutations callback logic.
-- Simplifies [page.tsx](file:///home/mazahir/projects/work/Agency%20OS/frontend/src/app/kanban/page.tsx) to pure display markup, mapping states directly into props of reusable presentation components (`KanbanFilters`, `KanbanBoard`, `TicketDetailModal`).
+- Simplifies [page.tsx](frontend/src/app/kanban/page.tsx) to pure display markup, mapping states directly into props of reusable presentation components (`KanbanFilters`, `KanbanBoard`, `TicketDetailModal`).
 
 ### Firebase Cloud Messaging (FCM) Integration
 
@@ -175,10 +175,10 @@ All form components use **React Hook Form** with **`zodResolver`** for schema-ba
 
 The monolithic `TicketDetailModal.tsx` was refactored into focused sub-components:
 
-- **[TicketProperties.tsx](file:///home/mazahir/projects/work/Agency%20OS/frontend/src/components/ticket/TicketProperties.tsx)**: Renders Project name, Assignee name, and Priority badge with colored icon cards.
-- **[TicketTimelineEstimation.tsx](file:///home/mazahir/projects/work/Agency%20OS/frontend/src/components/ticket/TicketTimelineEstimation.tsx)**: Renders Start/Due dates, Story Points (with tooltip), and Estimated Time. Uses a data-driven `items` array to eliminate 4× repeated JSX. Each row is rendered via the shared `TimelineCard` sub-component.
-- **[TimelineCard.tsx](file:///home/mazahir/projects/work/Agency%20OS/frontend/src/components/ticket/TimelineCard.tsx)**: Shared presentational row component accepting `icon`, `iconBg`, `label`, `value`, and optional `tooltip`.
-- **[TicketLoggingProgress.tsx](file:///home/mazahir/projects/work/Agency%20OS/frontend/src/components/ticket/TicketLoggingProgress.tsx)**: Status and actual hours inputs with `canEdit` prop — admins and assignees see editable selects/inputs; other employees see read-only text. Also renders the tags list.
+- **[TicketProperties.tsx](frontend/src/components/ticket/TicketProperties.tsx)**: Renders Project name, Assignee name, and Priority badge with colored icon cards.
+- **[TicketTimelineEstimation.tsx](frontend/src/components/ticket/TicketTimelineEstimation.tsx)**: Renders Start/Due dates, Story Points (with tooltip), and Estimated Time. Uses a data-driven `items` array to eliminate 4× repeated JSX. Each row is rendered via the shared `TimelineCard` sub-component.
+- **[TimelineCard.tsx](frontend/src/components/ticket/TimelineCard.tsx)**: Shared presentational row component accepting `icon`, `iconBg`, `label`, `value`, and optional `tooltip`.
+- **[TicketLoggingProgress.tsx](frontend/src/components/ticket/TicketLoggingProgress.tsx)**: Status and actual hours inputs with `canEdit` prop — admins and assignees see editable selects/inputs; other employees see read-only text. Also renders the tags list.
 
 ### Unified Date Formatter
 
@@ -205,3 +205,21 @@ const canEdit =
 - Own comments (matched by `c.user?._id === user?.id`) render right-aligned with indigo bubble styling.
 - Others' comments render left-aligned with slate styling.
 - `useRef` + `scrollTop` auto-scrolls to bottom on every comment update.
+
+### Ticket Soft Deletion
+
+- **Backend Schema & Query Middleware**: Added `isDeleted: boolean` to Mongoose schema in [ticket.model.ts](backend/src/models/ticket.model.ts) and registered a pre-query middleware (`/^find/`) to automatically filter out soft-deleted documents (`{ isDeleted: { $ne: true } }`) from everyday queries.
+- **Service & Access Control**: Added `DELETE /api/tickets/:ticketId` API route (restricted to administrators) to flag the ticket rather than deleting it.
+- **Frontend Integration**: Rendered a red "Delete Ticket" button inside [TicketDetailModal.tsx](frontend/src/components/ticket/TicketDetailModal.tsx) for admins. Clicking the button prompts the user using the shared `ConfirmModal` component before firing the delete mutation.
+
+### Ticket Assignee Editing
+
+- **Admin Assignment Dropdown**: Swapped the static Assignee text in [TicketProperties.tsx](frontend/src/components/ticket/TicketProperties.tsx) with an editable dropdown list when the current user is an Admin, allowing them to dynamically reassign the ticket to any employee.
+- **Save Button Queueing**: The assignee selection is managed locally in state and only committed to the database when the **Save Changes** button is clicked, matching the UX of status and actual hours updates.
+- **Reassignment Notifications**: Backend triggers a push notification alerting the employee when a ticket is assigned to them.
+
+### Firebase Cloud Messaging (FCM) Improvements
+
+- **FCM Data-Only Payload**: Converted FCM messages on the backend to a data-only payload format by omitting the `notification` object. This prevents the browser from automatically displaying unclickable default notifications, allowing the service worker's `onBackgroundMessage` handler to exclusively display the custom, clickable notification.
+- **Action Click Redirects**: Updated the foreground toast and background service worker (`firebase-messaging-sw.js`) click actions to redirect directly to the ticket URL (`/kanban?ticketId=...`), which automatically opens the ticket detail modal.
+- **Tab Reuse Navigation**: The service worker checks for an existing `/kanban` tab and navigates it to the correct ticket detail URL instead of opening a duplicate window.

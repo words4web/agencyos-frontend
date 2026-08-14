@@ -1,5 +1,6 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
@@ -14,7 +15,6 @@ import { IUser } from "@/types/auth/auth.types";
 import { EUserRole } from "@/enums";
 import { axiosInstance } from "../utils/axios";
 import { API_ROUTES } from "@/constants/api";
-import { STORAGE_KEYS } from "@/constants/storage";
 import { ROUTES } from "@/constants/route";
 import { toast } from "sonner";
 
@@ -24,6 +24,7 @@ export const useAuth = (requireAdmin = false) => {
   const router = useRouter();
   const pathname = usePathname();
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
   const { user, accessToken, isAuthenticated, isLoading } = useSelector(
     (state: RootState) => state.auth,
   );
@@ -95,11 +96,10 @@ export const useAuth = (requireAdmin = false) => {
       toast.error("Logout failed. Please try again.");
     } finally {
       if (typeof window !== "undefined") {
-        localStorage.removeItem(STORAGE_KEYS.FCM_TOKEN);
-        localStorage.removeItem(STORAGE_KEYS.FCM_LANG);
-        localStorage.removeItem(STORAGE_KEYS.NOTIFICATIONS_ENABLED);
+        localStorage.clear();
       }
-      dispatch(clearAuth());
+      queryClient.clear();
+      dispatch({ type: "RESET_STORE" });
       dispatch(setLoading(false));
     }
   };
