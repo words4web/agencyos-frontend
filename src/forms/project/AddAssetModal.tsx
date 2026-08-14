@@ -3,23 +3,29 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { Modal } from "@/components/Modal";
-import { Input } from "@/components/Input";
-import { Button } from "@/components/Button";
-import { ShieldAlert } from "lucide-react";
+import { ShieldAlert, Link, UploadCloud } from "lucide-react";
 import {
   addAssetSchema,
   AddAssetFormValues,
 } from "@/schemas/project/project.schema";
 import { useAddAsset } from "@/services/project/project.hooks";
 import { AddAssetModalProps } from "@/types/project/project.types";
+import { useFileUpload } from "@/hooks/useFileUpload";
+import { EAssetProvider } from "@/enums";
+import { ConfirmModal } from "@/components/ConfirmModal";
+import { LinkAssetTab } from "./LinkAssetTab";
+import { UploadFilesTab } from "./UploadFilesTab";
 
 export function AddAssetModal({
   isOpen,
   onClose,
   projectId,
 }: AddAssetModalProps) {
+  const [activeTab, setActiveTab] = useState<"link" | "upload">("link");
   const addAssetMutation = useAddAsset();
   const [formError, setFormError] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState<File[] | null>(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const {
     register,
@@ -28,17 +34,16 @@ export function AddAssetModal({
     formState: { errors },
   } = useForm<AddAssetFormValues>({
     resolver: zodResolver(addAssetSchema),
-    defaultValues: {
-      name: "",
-      url: "",
-      category: "Brand Kit",
-    },
+    defaultValues: { name: "", url: "", category: "Brand Kit" },
   });
+
+  const { uploads, prepareUploads, startUploads, clearUploads, removeUpload } =
+    useFileUpload(projectId);
 
   const onSubmit = (data: AddAssetFormValues) => {
     setFormError("");
     addAssetMutation.mutate(
-      { projectId, payload: data },
+      { projectId, payload: { ...data, provider: EAssetProvider.URL } },
       {
         onSuccess: () => {
           reset();
@@ -54,55 +59,103 @@ export function AddAssetModal({
     );
   };
 
+  const handleFilesSelected = (files: File[]) => {
+    const validated = prepareUploads(files);
+    if (validated) {
+      setSelectedFiles((prev) => (prev ? [...prev, ...validated] : validated));
+    }
+  };
+
+  const handleRemoveSelectedFile = (index: number) => {
+    setSelectedFiles((prev) => {
+      if (!prev) return null;
+      const updated = prev.filter((_, idx) => idx !== index);
+      return updated.length > 0 ? updated : null;
+    });
+  };
+
+  const handleConfirmUpload = () => {
+    if (selectedFiles) {
+      startUploads(selectedFiles);
+      setSelectedFiles(null);
+      setIsConfirmOpen(false);
+    }
+  };
+
+  const handleModalClose = () => {
+    reset();
+    clearUploads();
+    setSelectedFiles(null);
+    setIsConfirmOpen(false);
+    setFormError("");
+    onClose();
+  };
+
+  const tabClass = (tab: "link" | "upload") =>
+    `flex items-center gap-2 px-4 py-2 text-xs font-semibold uppercase tracking-wide border-b-2 transition-all -mb-px ${
+      activeTab === tab
+        ? "border-indigo-500 text-indigo-400 font-bold"
+        : "border-transparent text-slate-500 hover:text-slate-400"
+    }`;
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Add Project Asset">
-      {formError && (
-        <div className="mb-4 p-3 bg-red-950/20 border border-red-800/40 rounded-lg text-xs text-red-400 flex items-center gap-2">
-          <ShieldAlert size={16} />
-          {formError}
+    <>
+      <ConfirmModal
+        isOpen={isConfirmOpen}
+        title="Upload Files"
+        description={`Are you sure you want to upload ${selectedFiles?.length || 0} file(s) directly to this project's Google Drive folder?`}
+        confirmLabel="Upload"
+        onConfirm={handleConfirmUpload}
+        onClose={() => setIsConfirmOpen(false)}
+      />
+      <Modal
+        isOpen={isOpen}
+        onClose={handleModalClose}
+        title="Add Project Asset">
+        <div className="flex border-b border-slate-800 mb-6 gap-2">
+          <button
+            type="button"
+            onClick={() => setActiveTab("link")}
+            className={tabClass("link")}>
+            <Link size={14} />
+            Link Asset
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("upload")}
+            className={tabClass("upload")}>
+            <UploadCloud size={14} />
+            Upload Files
+          </button>
         </div>
-      )}
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <Input
-          id="assetName"
-          label="Asset Title"
-          placeholder="Logo Kit / SOP Document"
-          error={errors.name?.message}
-          {...register("name")}
-        />
-        <Input
-          id="assetUrl"
-          label="Resource URL"
-          placeholder="https://drive.google.com/..."
-          error={errors.url?.message}
-          {...register("url")}
-        />
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-semibold text-slate-300">
-            Category
-          </label>
-          <select
-            className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 focus:outline-none focus:border-indigo-500 text-sm"
-            {...register("category")}>
-            <option value="Brand Kit">Brand Kit</option>
-            <option value="Design File">Design File</option>
-            <option value="SOP">SOP</option>
-            <option value="URL">URL</option>
-            <option value="Other">Other</option>
-          </select>
-          {errors.category && (
-            <p className="text-xs text-red-400">{errors.category.message}</p>
-          )}
-        </div>
-        <div className="flex gap-3 justify-end mt-4">
-          <Button type="button" variant="secondary" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button type="submit" disabled={addAssetMutation.isPending}>
-            {addAssetMutation.isPending ? "Adding..." : "Add Asset"}
-          </Button>
-        </div>
-      </form>
-    </Modal>
+
+        {formError && (
+          <div className="mb-4 p-3 bg-red-950/20 border border-red-800/40 rounded-lg text-xs text-red-400 flex items-center gap-2">
+            <ShieldAlert size={16} />
+            {formError}
+          </div>
+        )}
+
+        {activeTab === "link" ? (
+          <LinkAssetTab
+            register={register}
+            errors={errors}
+            isPending={addAssetMutation.isPending}
+            onSubmit={handleSubmit(onSubmit)}
+            onCancel={handleModalClose}
+          />
+        ) : (
+          <UploadFilesTab
+            selectedFiles={selectedFiles}
+            uploads={uploads}
+            onFilesSelected={handleFilesSelected}
+            onRemoveSelectedFile={handleRemoveSelectedFile}
+            onRemoveUpload={removeUpload}
+            onClose={handleModalClose}
+            onUploadClick={() => setIsConfirmOpen(true)}
+          />
+        )}
+      </Modal>
+    </>
   );
 }

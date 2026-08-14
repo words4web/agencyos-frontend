@@ -2,32 +2,10 @@
 
 import { PageHeader } from "@/components/PageHeader";
 import { Sidebar } from "@/components/Sidebar";
-import { Briefcase } from "lucide-react";
+import { Briefcase, ExternalLink } from "lucide-react";
 import { useGetProjects } from "@/services/project/project.hooks";
-import {
-  ExternalLink,
-  Palette,
-  FileText,
-  Globe,
-  Package,
-  PenTool,
-} from "lucide-react";
+import { ASSET_ICON } from "@/constants/project";
 import React from "react";
-
-const ASSET_ICON: Record<
-  string,
-  { icon: React.ElementType; color: string; bg: string }
-> = {
-  "Brand Kit": { icon: Palette, color: "text-pink-400", bg: "bg-pink-500/10" },
-  "Design File": {
-    icon: PenTool,
-    color: "text-purple-400",
-    bg: "bg-purple-500/10",
-  },
-  SOP: { icon: FileText, color: "text-amber-400", bg: "bg-amber-500/10" },
-  URL: { icon: Globe, color: "text-sky-400", bg: "bg-sky-500/10" },
-  Other: { icon: Package, color: "text-slate-400", bg: "bg-slate-500/10" },
-};
 
 export default function EmployeeProjectsPage() {
   const { data: projects = [], isLoading } = useGetProjects();

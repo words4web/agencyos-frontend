@@ -26,3 +26,15 @@ export enum ETicketPriority {
 export enum EPlatformType {
   WEB = "web",
 }
+
+export enum EAssetProvider {
+  GOOGLE_DRIVE = "google_drive",
+  URL = "url",
+}
+
+export enum EUploadStatus {
+  IDLE = "idle",
+  UPLOADING = "uploading",
+  DONE = "done",
+  ERROR = "error",
+}
