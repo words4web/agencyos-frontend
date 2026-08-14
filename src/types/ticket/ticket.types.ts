@@ -34,6 +34,7 @@ export interface ITicket {
   actualHours?: number;
   tags?: string[];
   startDate?: string;
+  isDeleted?: boolean;
   createdAt: string;
 }
 
@@ -117,8 +118,11 @@ export interface TicketDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   onUpdateTicket: (ticketId: string, payload: UpdateTicketPayload) => void;
+  onDeleteTicket?: (ticketId: string) => void;
   onSubmitComment: (values: AddCommentFormValues) => void;
+  employees: IEmployee[];
   isCommentsPending?: boolean;
+  isDeleting?: boolean;
 }
 
 export interface TicketTimelineEstimationProps {
@@ -143,6 +147,10 @@ export interface FormatTicketDateOptions {
 
 export interface TicketPropertiesProps {
   ticket: ITicket;
+  employees?: IEmployee[];
+  canEditAssignee?: boolean;
+  localAssigneeId?: string;
+  onUpdateAssignee?: (assigneeId: string) => void;
 }
 
 export interface TimelineCardProps {

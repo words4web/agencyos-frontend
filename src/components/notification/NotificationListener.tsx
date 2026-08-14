@@ -23,7 +23,6 @@ export function NotificationListener() {
 
     const subscribe = async () => {
       unsubscribe = await onForegroundMessage((payload) => {
-        console.log("[NotificationListener] FCM payload received:", payload);
         const notification = payload?.notification ?? {};
         const data = payload?.data ?? {};
         const title = notification?.title ?? data?.title ?? "New Alert";
@@ -36,8 +35,9 @@ export function NotificationListener() {
           duration: 6000,
           action: ticketId
             ? {
-                label: "View Board",
-                onClick: () => router.push(ROUTES.KANBAN),
+                label: "View Ticket",
+                onClick: () =>
+                  router.push(`${ROUTES.KANBAN}?ticketId=${ticketId}`),
               }
             : undefined,
         });

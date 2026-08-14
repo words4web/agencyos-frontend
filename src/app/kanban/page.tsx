@@ -29,10 +29,12 @@ export default function KanbanPage() {
     handleCloseDetails,
     handleCreateTicket,
     handleUpdateTicket,
+    handleDeleteTicket,
     handleAddComment,
     clearFilters,
     isCreatingTicket,
     isCommentsPending,
+    isDeletingTicket,
   } = useKanban();
 
   return (
@@ -89,8 +91,11 @@ export default function KanbanPage() {
         isOpen={!!selectedTicket}
         onClose={handleCloseDetails}
         onUpdateTicket={handleUpdateTicket}
+        onDeleteTicket={handleDeleteTicket}
         onSubmitComment={handleAddComment}
+        employees={employees}
         isCommentsPending={isCommentsPending}
+        isDeleting={isDeletingTicket}
       />
     </>
   );

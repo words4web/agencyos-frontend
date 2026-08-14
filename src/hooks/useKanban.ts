@@ -10,6 +10,7 @@ import {
   useCreateTicket,
   useUpdateTicket,
   useAddComment,
+  useDeleteTicket,
 } from "@/services/ticket/ticket.hooks";
 import { useGetProjects } from "@/services/project/project.hooks";
 import { useGetEmployees } from "@/services/employee/employee.hooks";
@@ -38,6 +39,7 @@ export function useKanban() {
   const createTicketMutation = useCreateTicket();
   const updateTicketMutation = useUpdateTicket();
   const addCommentMutation = useAddComment();
+  const deleteTicketMutation = useDeleteTicket();
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [createError, setCreateError] = useState("");
@@ -116,6 +118,23 @@ export function useKanban() {
     });
   };
 
+  const handleDeleteTicket = (ticketId: string) => {
+    deleteTicketMutation.mutate(ticketId, {
+      onSuccess: () => {
+        if (selectedTicketId === ticketId) {
+          setSelectedTicketId(null);
+        }
+        toast.success("Ticket deleted successfully!");
+      },
+      onError: (err: any) => {
+        const errorMsg =
+          err?.response?.data?.message ||
+          "Failed to delete ticket. Please try again.";
+        toast.error(errorMsg);
+      },
+    });
+  };
+
   const handleCloseDetails = () => {
     setSelectedTicketId(null);
     router.replace("/kanban");
@@ -147,9 +166,11 @@ export function useKanban() {
     handleCloseDetails,
     handleCreateTicket,
     handleUpdateTicket,
+    handleDeleteTicket,
     handleAddComment,
     clearFilters,
     isCreatingTicket: createTicketMutation.isPending,
     isCommentsPending: addCommentMutation.isPending,
+    isDeletingTicket: deleteTicketMutation.isPending,
   };
 }

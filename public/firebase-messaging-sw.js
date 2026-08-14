@@ -25,12 +25,7 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-  console.log(
-    "[firebase-messaging-sw.js] Received background message: ",
-    payload,
-  );
-
-  const data = payload.data || {};
+  const data = payload?.data || {};
 
   const title = payload.notification?.title || data.title || "Agency OS";
   const body =
@@ -45,12 +40,12 @@ messaging.onBackgroundMessage((payload) => {
     vibrate: [200, 100, 200],
     requireInteraction: false,
     timestamp: Date.now(),
-    tag: data.ticketId || data.type || "agency-os-general",
+    tag: data?.ticketId || data?.type || "agency-os-general",
     renotify: true,
     actions: [
       {
         action: "view",
-        title: "View Board",
+        title: data?.ticketId ? "View Ticket" : "View Board",
       },
     ],
   };
@@ -61,7 +56,11 @@ messaging.onBackgroundMessage((payload) => {
 self.addEventListener("notificationclick", function (event) {
   event.notification.close();
 
+  const data = event?.notification?.data || {};
   let targetPath = "/kanban";
+  if (data?.ticketId) {
+    targetPath = `/kanban?ticketId=${data?.ticketId}`;
+  }
 
   const targetUrl = new URL(targetPath, self.location.origin);
 
@@ -72,7 +71,14 @@ self.addEventListener("notificationclick", function (event) {
         for (const client of clientList) {
           try {
             const clientUrl = new URL(client.url);
-            if (clientUrl.pathname === targetPath && "focus" in client) {
+            if (
+              (clientUrl.pathname === "/kanban" ||
+                clientUrl.pathname === targetPath) &&
+              "focus" in client
+            ) {
+              if ("navigate" in client) {
+                client.navigate(targetUrl.href);
+              }
               return client.focus();
             }
           } catch (urlErr) {
