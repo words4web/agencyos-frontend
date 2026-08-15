@@ -92,12 +92,14 @@ export const Sidebar: React.FC = () => {
             : "w-0 -translate-x-full md:w-20 md:translate-x-0"
         }`}>
         <div
-          className={`flex items-center justify-between py-7 border-b border-slate-900/50 ${isSidebarOpen ? "px-6" : "px-0 justify-center"}`}>
-          <div className="flex items-center gap-3.5">
-            <div className="w-9 h-9 rounded-xl bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shadow-md shadow-indigo-500/5 shrink-0">
-              <Terminal size={18} />
-            </div>
-            {isSidebarOpen && (
+          className={`flex items-center py-7 border-b border-slate-900/50 ${
+            isSidebarOpen ? "px-6 justify-between" : "px-0 justify-center"
+          }`}>
+          {isSidebarOpen && (
+            <div className="flex items-center gap-3.5">
+              <div className="w-9 h-9 rounded-xl bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shadow-md shadow-indigo-500/5 shrink-0">
+                <Terminal size={18} />
+              </div>
               <div>
                 <h1 className="font-bold text-base text-slate-100 tracking-tight leading-tight">
                   AgencyOS
@@ -106,16 +108,17 @@ export const Sidebar: React.FC = () => {
                   {user?.role} Mode
                 </span>
               </div>
-            )}
-          </div>
-
-          {isSidebarOpen && (
-            <button
-              onClick={handleCloseSidebar}
-              className="p-1.5 rounded-lg border border-slate-800 bg-slate-900/50 text-slate-400 hover:text-slate-200 hover:bg-slate-800 md:hidden transition-colors">
-              <ChevronLeft size={16} />
-            </button>
+            </div>
           )}
+
+          <button
+            onClick={() => dispatch(setSidebarOpen(!isSidebarOpen))}
+            className="p-1.5 rounded-lg border border-slate-800 bg-slate-900/50 text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors">
+            <ChevronLeft
+              size={16}
+              className={`transition-transform duration-300 ${!isSidebarOpen ? "rotate-180" : ""}`}
+            />
+          </button>
         </div>
 
         <nav
@@ -166,18 +169,6 @@ export const Sidebar: React.FC = () => {
 
         <div
           className={`p-4 border-t border-slate-900/50 flex flex-col gap-2 ${isSidebarOpen ? "" : "items-center"}`}>
-          <button
-            onClick={() => dispatch(setSidebarOpen(!isSidebarOpen))}
-            className={`w-full flex items-center text-slate-400 hover:text-slate-200 hover:bg-slate-900/40 border border-transparent rounded-xl text-sm font-medium transition-all duration-200 ${
-              isSidebarOpen ? "px-4 py-3 gap-3" : "py-3 w-12 justify-center"
-            }`}>
-            <ChevronLeft
-              size={17}
-              className={`transition-transform duration-300 ${!isSidebarOpen ? "rotate-180" : ""}`}
-            />
-            {isSidebarOpen && <span>Collapse Menu</span>}
-          </button>
-
           <button
             onClick={() => setIsConfirmLogoutOpen(true)}
             className={`w-full flex items-center text-slate-400 hover:text-rose-400 hover:bg-rose-500/5 border border-transparent hover:border-rose-500/10 rounded-xl text-sm font-medium transition-all duration-200 ${

@@ -14,6 +14,8 @@ export interface IProjectAsset {
   provider: EAssetProvider;
   providerFileId?: string;
   mimeType?: string;
+  isFolder?: boolean;
+  parentFolderId?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -58,12 +60,23 @@ export interface AddAssetPayload {
   provider?: EAssetProvider;
   providerFileId?: string;
   mimeType?: string;
+  parentFolderId?: string;
+}
+
+export interface ConfirmAssetUploadPayload {
+  fileId: string;
+  name: string;
+  mimeType: string;
+  webViewLink: string;
+  category: string;
+  parentFolderId?: string;
 }
 
 export interface AddAssetModalProps {
   isOpen: boolean;
   onClose: () => void;
   projectId: string;
+  parentFolderId?: string;
 }
 
 export interface ProjectCardProps {
@@ -137,6 +150,7 @@ export interface FileListProps {
   onDeleteAsset: (assetId: string) => void;
   onEditAsset: (asset: IProjectAsset) => void;
   deletingAssetId: string | null;
+  onFolderClick?: (folderId: string) => void;
 }
 
 export interface FileGridProps {
@@ -144,6 +158,7 @@ export interface FileGridProps {
   onDeleteAsset: (assetId: string) => void;
   onEditAsset: (asset: IProjectAsset) => void;
   deletingAssetId: string | null;
+  onFolderClick?: (folderId: string) => void;
 }
 
 export interface FileCardProps {
@@ -151,6 +166,7 @@ export interface FileCardProps {
   onDelete: () => void;
   onEdit: () => void;
   isDeleting?: boolean;
+  onFolderClick?: (folderId: string) => void;
 }
 
 export interface AssetActionMenuProps {
@@ -158,4 +174,12 @@ export interface AssetActionMenuProps {
   onEdit: () => void;
   onDelete: () => void;
   isDeleting?: boolean;
+  onMenuOpenChange?: (open: boolean) => void;
+}
+
+export interface CreateFolderModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  projectId: string;
+  parentFolderId: string | null;
 }

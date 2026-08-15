@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { projectService } from "@/services/project/project.service";
-import { useConfirmAssetUpload } from "@/services/project/project.hooks";
+import { useConfirmBatchAssetUpload } from "@/services/project/project.hooks";
 import { toast } from "sonner";
 
 import { EUploadStatus } from "@/enums";
@@ -15,14 +15,21 @@ import { getAssetCategory } from "@/utils/file.utils";
 export function useFileUpload(
   projectId: string,
   onAllUploadsComplete?: () => void,
+  targetFolderId?: string,
 ) {
   const [uploads, setUploads] = useState<FileUploadState[]>([]);
-  const confirmAssetUploadMutation = useConfirmAssetUpload();
+  const confirmBatchAssetUploadMutation = useConfirmBatchAssetUpload();
 
   const prepareUploads = useCallback((files: File[]): File[] | null => {
-    if (files?.length > MAX_CONCURRENT_FILES) {
+    const activeCount = uploads.filter(
+      (up) =>
+        up.status === EUploadStatus.UPLOADING ||
+        up.status === EUploadStatus.IDLE,
+    ).length;
+
+    if (activeCount + files?.length > MAX_CONCURRENT_FILES) {
       toast.error(
-        `You can only upload up to ${MAX_CONCURRENT_FILES} files at once.`,
+        `You can only upload up to ${MAX_CONCURRENT_FILES} files at once. (Active uploads: ${activeCount})`,
       );
       return null;
     }
@@ -50,7 +57,7 @@ export function useFileUpload(
     }
 
     return validFiles.length > 0 ? validFiles : null;
-  }, []);
+  }, [uploads]);
 
   const startUploads = useCallback(
     async (files: File[]) => {
@@ -68,44 +75,76 @@ export function useFileUpload(
 
       setUploads((prev) => [...prev, ...validFiles?.map((vf) => vf?.state)]);
 
+      const confirmedUploads: Array<{
+        fileId: string;
+        name: string;
+        mimeType: string;
+        webViewLink: string;
+        category: string;
+        parentFolderId?: string;
+      }> = [];
+
       await Promise.all(
         validFiles.map(async ({ file, state }) => {
           try {
             setUploads((prev) =>
               prev?.map((up) =>
                 up?.id === state?.id
-                  ? { ...up, status: EUploadStatus.UPLOADING }
+                  ? { ...up, status: EUploadStatus.UPLOADING, progress: 0 }
                   : up,
               ),
             );
 
-            const uploadRes = await projectService.uploadFile(
-              projectId,
-              file,
-              (progress) => {
-                setUploads((prev) =>
-                  prev?.map((up) =>
-                    up?.id === state?.id
-                      ? { ...up, progress, status: EUploadStatus.UPLOADING }
-                      : up,
-                  ),
-                );
-              },
-            );
+            const speedFactor = 0.04 + Math.random() * 0.06;
+            const intervalDuration = 180 + Math.floor(Math.random() * 140);
+
+            let simulatedProgress = 0;
+            const intervalId = setInterval(() => {
+              setUploads((prev) =>
+                prev?.map((up) => {
+                  if (up?.id !== state?.id) return up;
+                  const increment = Math.max(
+                    1,
+                    Math.round((95 - simulatedProgress) * speedFactor) +
+                      Math.floor(Math.random() * 2),
+                  );
+                  simulatedProgress = Math.min(
+                    95,
+                    simulatedProgress + increment,
+                  );
+                  return {
+                    ...up,
+                    progress: simulatedProgress,
+                    status: EUploadStatus.UPLOADING,
+                  };
+                }),
+              );
+            }, intervalDuration);
+
+            let uploadRes;
+            try {
+              uploadRes = await projectService.uploadFile(
+                projectId,
+                file,
+                undefined,
+                targetFolderId,
+              );
+            } finally {
+              clearInterval(intervalId);
+            }
+
             const fileId = uploadRes.data?.data?.fileId;
 
             const webViewLink = `https://drive.google.com/file/d/${fileId}/view?usp=drivesdk`;
             const category = getAssetCategory(file?.type);
 
-            await confirmAssetUploadMutation.mutateAsync({
-              projectId,
-              payload: {
-                fileId,
-                name: file?.name,
-                mimeType: file?.type || "application/octet-stream",
-                webViewLink,
-                category,
-              },
+            confirmedUploads.push({
+              fileId,
+              name: file?.name,
+              mimeType: file?.type || "application/octet-stream",
+              webViewLink,
+              category,
+              parentFolderId: targetFolderId,
             });
 
             setUploads((prev) =>
@@ -132,11 +171,29 @@ export function useFileUpload(
         }),
       );
 
+      if (confirmedUploads.length > 0) {
+        try {
+          await confirmBatchAssetUploadMutation.mutateAsync({
+            projectId,
+            payload: confirmedUploads,
+          });
+        } catch (confirmError) {
+          toast.error(
+            "Failed to save uploaded assets details in the database.",
+          );
+        }
+      }
+
       if (onAllUploadsComplete) {
         onAllUploadsComplete();
       }
     },
-    [projectId, confirmAssetUploadMutation, onAllUploadsComplete],
+    [
+      projectId,
+      confirmBatchAssetUploadMutation,
+      onAllUploadsComplete,
+      targetFolderId,
+    ],
   );
 
   const clearUploads = useCallback(() => setUploads([]), []);

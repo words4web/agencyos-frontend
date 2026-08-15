@@ -1,6 +1,6 @@
 import { TicketPropertiesProps } from "@/types/ticket/ticket.types";
 import { getPriorityBadge } from "@/utils/ticket";
-import { Folder, User, Sliders } from "lucide-react";
+import { Folder, User, Sliders, Tag } from "lucide-react";
 
 export function TicketProperties({
   ticket,
@@ -10,29 +10,29 @@ export function TicketProperties({
   onUpdateAssignee,
 }: TicketPropertiesProps) {
   return (
-    <div className="flex flex-col gap-3 bg-slate-950/40 p-4 border border-slate-800/80 rounded-xl">
+    <div className="flex flex-col gap-3.5 bg-slate-950/40 p-4 border border-slate-800/80 rounded-xl min-h-[174px]">
       <h6 className="text-[11px] uppercase font-bold text-slate-400 tracking-wider flex items-center gap-1.5 border-b border-slate-900 pb-2 mb-1">
         <Sliders size={12} className="text-indigo-400" />
         Ticket Properties
       </h6>
 
       <div className="flex items-center gap-2.5">
-        <div className="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/10">
-          <Folder size={14} className="text-indigo-400" />
+        <div className="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/10 text-indigo-400 shrink-0">
+          <Folder size={14} />
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col min-w-0 flex-1">
           <span className="text-[10px] uppercase font-bold text-slate-500">
             Project
           </span>
-          <span className="text-sm font-semibold text-slate-200">
+          <span className="text-xs font-semibold text-slate-200 truncate mt-0.5">
             {ticket?.project?.name}
           </span>
         </div>
       </div>
 
       <div className="flex items-center gap-2.5">
-        <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/10">
-          <User size={14} className="text-emerald-400" />
+        <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/10 text-emerald-400 shrink-0">
+          <User size={14} />
         </div>
         <div className="flex flex-col flex-1 min-w-0">
           <span className="text-[10px] uppercase font-bold text-slate-500">
@@ -42,7 +42,7 @@ export function TicketProperties({
             <select
               value={localAssigneeId || ""}
               onChange={(e) => onUpdateAssignee?.(e.target.value)}
-              className="text-sm font-semibold text-slate-200 bg-slate-900 border border-slate-800/80 rounded-lg py-1 px-2 focus:outline-none focus:border-indigo-500 w-full mt-0.5">
+              className="text-xs font-semibold text-slate-200 bg-slate-900 border border-slate-800/80 rounded px-2 py-1 focus:outline-none focus:border-indigo-500 w-full mt-1 min-h-[28px]">
               {employees?.map((emp) => (
                 <option key={emp?._id} value={emp?._id}>
                   {emp?.name} ({emp?.designation})
@@ -50,19 +50,44 @@ export function TicketProperties({
               ))}
             </select>
           ) : (
-            <span className="text-sm font-semibold text-slate-200">
+            <span className="text-xs font-semibold text-slate-200 truncate mt-0.5">
               {ticket?.assignee?.name}
             </span>
           )}
         </div>
       </div>
 
-      <div className="flex items-center gap-2.5 mt-1 pt-1 border-t border-slate-900/60">
-        <div className="flex flex-col w-full">
-          <span className="text-[10px] uppercase font-bold text-slate-500 mb-1.5">
+      <div className="flex items-center gap-2.5">
+        <div className="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/10 text-indigo-400 shrink-0">
+          <Sliders size={14} />
+        </div>
+        <div className="flex flex-col flex-1 min-w-0">
+          <span className="text-[10px] uppercase font-bold text-slate-500">
             Priority
           </span>
-          <div>{getPriorityBadge(ticket?.priority)}</div>
+          <div className="mt-1 flex items-center min-h-[28px]">
+            {getPriorityBadge(ticket?.priority)}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-1 pt-3 border-t border-slate-900/60 flex flex-col gap-1.5 w-full">
+        <span className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1">
+          <Tag size={10} className="text-indigo-400" />
+          Tags
+        </span>
+        <div className="flex flex-wrap gap-2">
+          {ticket?.tags && ticket?.tags?.length > 0 ? (
+            ticket?.tags?.map((tag, i) => (
+              <span
+                key={`${tag}-${i}`}
+                className="text-[10px] font-bold bg-indigo-950/40 text-indigo-400 border border-indigo-900/60 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                {tag}
+              </span>
+            ))
+          ) : (
+            <span className="text-xs text-slate-500 italic">No tags</span>
+          )}
         </div>
       </div>
     </div>

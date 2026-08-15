@@ -41,7 +41,9 @@ export const FileUploadList: React.FC<FileUploadListProps> = ({
                 {up?.status === EUploadStatus.UPLOADING && (
                   <>
                     <span className="text-[10px] font-semibold text-indigo-400">
-                      {up?.progress}%
+                      {up?.progress >= 90
+                        ? "Processing..."
+                        : `${up?.progress}%`}
                     </span>
                     <Loader2
                       size={14}

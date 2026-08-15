@@ -123,11 +123,35 @@ export interface TicketDetailModalProps {
   employees: IEmployee[];
   isCommentsPending?: boolean;
   isDeleting?: boolean;
+  isUpdating?: boolean;
 }
 
 export interface TicketTimelineEstimationProps {
   ticket: ITicket;
-  formatDate: (dateStr?: string) => string;
+  formatDate: (dateStr?: string, options?: FormatTicketDateOptions) => string;
+  canEdit: boolean;
+  localStartDate: string;
+  setLocalStartDate: (val: string) => void;
+  localDueDate: string;
+  setLocalDueDate: (val: string) => void;
+  localStoryPoints: string;
+  setLocalStoryPoints: (val: string) => void;
+  localEstimatedHours: string;
+  setLocalEstimatedHours: (val: string) => void;
+}
+
+export interface GetTimelineItemsParams {
+  ticket: ITicket;
+  formatDate: (dateStr?: string, options?: any) => string;
+  localStartDate: string;
+  setLocalStartDate: (val: string) => void;
+  localDueDate: string;
+  setLocalDueDate: (val: string) => void;
+  localStoryPoints: string;
+  setLocalStoryPoints: (val: string) => void;
+  localEstimatedHours: string;
+  setLocalEstimatedHours: (val: string) => void;
+  inputClass: string;
 }
 
 export interface TicketLoggingProgressProps {
@@ -159,4 +183,28 @@ export interface TimelineCardProps {
   label: string;
   value: ReactNode;
   tooltip?: string;
+}
+
+export interface TicketInfoTabProps {
+  ticket: ITicket;
+  employees: IEmployee[];
+  isAdmin: boolean;
+  canEdit: boolean;
+  formState: {
+    status: any;
+    actualHours: number;
+    assigneeId: string;
+    description: string;
+    startDate: string;
+    dueDate: string;
+    storyPoints: string;
+    estimatedHours: string;
+  };
+  setFormValue: (key: any, value: any) => void;
+}
+
+export interface TicketCommentsTabProps {
+  ticket: ITicket;
+  onSubmitComment: (values: AddCommentFormValues) => void;
+  isCommentsPending?: boolean;
 }

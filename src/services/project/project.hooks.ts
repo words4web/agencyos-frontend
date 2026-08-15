@@ -4,6 +4,7 @@ import {
   CreateProjectPayload,
   AssignEmployeesPayload,
   AddAssetPayload,
+  ConfirmAssetUploadPayload,
 } from "@/types/project/project.types";
 
 export const useGetProjects = (enabled = true) => {
@@ -70,11 +71,11 @@ export const useAddAsset = () => {
     }) => {
       return projectService.addAsset(variables.projectId, variables.payload);
     },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["projects"] });
-      queryClient.invalidateQueries({
-        queryKey: ["project", variables?.projectId],
-      });
+    onSuccess: (response, variables) => {
+      const updated = response.data?.data;
+      if (updated) {
+        queryClient.setQueryData(["project", variables?.projectId], updated);
+      }
     },
   });
 };
@@ -94,11 +95,11 @@ export const useUpdateAsset = () => {
         variables.payload,
       );
     },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["projects"] });
-      queryClient.invalidateQueries({
-        queryKey: ["project", variables?.projectId],
-      });
+    onSuccess: (response, variables) => {
+      const updated = response.data?.data;
+      if (updated) {
+        queryClient.setQueryData(["project", variables?.projectId], updated);
+      }
     },
   });
 };
@@ -110,11 +111,11 @@ export const useDeleteAsset = () => {
     mutationFn: (variables: { projectId: string; assetId: string }) => {
       return projectService.deleteAsset(variables.projectId, variables.assetId);
     },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["projects"] });
-      queryClient.invalidateQueries({
-        queryKey: ["project", variables?.projectId],
-      });
+    onSuccess: (response, variables) => {
+      const updated = response.data?.data;
+      if (updated) {
+        queryClient.setQueryData(["project", variables?.projectId], updated);
+      }
     },
   });
 };
@@ -138,24 +139,88 @@ export const useConfirmAssetUpload = () => {
   return useMutation({
     mutationFn: (variables: {
       projectId: string;
-      payload: {
-        fileId: string;
-        name: string;
-        mimeType: string;
-        webViewLink: string;
-        category: string;
-      };
+      payload: ConfirmAssetUploadPayload;
     }) => {
       return projectService.confirmAssetUpload(
         variables.projectId,
         variables.payload,
       );
     },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["projects"] });
-      queryClient.invalidateQueries({
-        queryKey: ["project", variables?.projectId],
-      });
+    onSuccess: (response, variables) => {
+      const updated = response.data?.data;
+      if (updated) {
+        queryClient.setQueryData(["project", variables?.projectId], updated);
+      }
+    },
+  });
+};
+
+export const useConfirmBatchAssetUpload = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (variables: {
+      projectId: string;
+      payload: ConfirmAssetUploadPayload[];
+    }) => {
+      return projectService.confirmBatchAssetUpload(
+        variables.projectId,
+        variables.payload,
+      );
+    },
+    onSuccess: (response, variables) => {
+      const updated = response.data?.data;
+      if (updated) {
+        queryClient.setQueryData(["project", variables?.projectId], updated);
+      }
+    },
+  });
+};
+
+export const useCreateSubFolder = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (variables: {
+      projectId: string;
+      parentFolderId: string | null;
+      name: string;
+    }) => {
+      return projectService.createSubFolder(
+        variables.projectId,
+        variables.parentFolderId,
+        variables.name,
+      );
+    },
+    onSuccess: (response, variables) => {
+      const updated = response.data?.data;
+      if (updated) {
+        queryClient.setQueryData(["project", variables?.projectId], updated);
+      }
+    },
+  });
+};
+
+export const useRenameFolder = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (variables: {
+      projectId: string;
+      assetId: string;
+      name: string;
+    }) => {
+      return projectService.renameFolder(
+        variables.projectId,
+        variables.assetId,
+        variables.name,
+      );
+    },
+    onSuccess: (response, variables) => {
+      const updated = response.data?.data;
+      if (updated) {
+        queryClient.setQueryData(["project", variables?.projectId], updated);
+      }
     },
   });
 };

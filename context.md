@@ -223,3 +223,16 @@ const canEdit =
 - **FCM Data-Only Payload**: Converted FCM messages on the backend to a data-only payload format by omitting the `notification` object. This prevents the browser from automatically displaying unclickable default notifications, allowing the service worker's `onBackgroundMessage` handler to exclusively display the custom, clickable notification.
 - **Action Click Redirects**: Updated the foreground toast and background service worker (`firebase-messaging-sw.js`) click actions to redirect directly to the ticket URL (`/kanban?ticketId=...`), which automatically opens the ticket detail modal.
 - **Tab Reuse Navigation**: The service worker checks for an existing `/kanban` tab and navigates it to the correct ticket detail URL instead of opening a duplicate window.
+
+### File Explorer URL Synchronization & Click Bug Fixes
+
+- **URL-Synced Folder Navigation**: Replaced the local `currentFolderId` state with `useSearchParams()` and `usePathname()` in [FileExplorer.tsx](frontend/src/components/project/FileExplorer.tsx). Navigating folders updates the `?folder=` query parameter in the browser, enabling folder views to persist across page refreshes and allowing users to copy/paste deep-links directly.
+- **Next.js Suspense Wrappers**: Wrapped `<FileExplorer />` in `<Suspense>` boundaries inside the admin and employee files pages to satisfy the Next.js App Router runtime requirement for components reading from `useSearchParams()`.
+- **Top Card Click Bug Fix**: Corrected click event propagation boundaries. Changed the target check in [FolderCard.tsx](frontend/src/components/project/FolderCard.tsx) and [FileCard.tsx](frontend/src/components/project/FileCard.tsx) from `.relative` to `.action-menu-container`. This resolves a bug where the top-half/preview container of cards (which also uses the `relative` class) was unclickable.
+- **Quick File Sharing**: Added a `Link2` icon button to the top-right overlay of file cards. Clicking it copies the direct asset URL to the clipboard and throws a success toast alert.
+
+### Sidebar Layout Enhancements
+
+- **Header Integrated Toggle**: Moved the Sidebar expand/collapse toggle button from the bottom of the navigation area to the top header next to the branding.
+- **Logo Collapsing**: Modified the header to hide the logo brand icon (`Terminal`) and text metadata when the sidebar is collapsed, keeping the navigation panel clean and compact.
+- **Bottom Button Cleanup**: Cleaned up the redundant collapse button at the bottom of the sidebar.

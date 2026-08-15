@@ -28,7 +28,7 @@ export function useKanban() {
   const [filterAssignee, setFilterAssignee] = useState("");
   const [filterPriority, setFilterPriority] = useState("");
 
-  const { data: tickets = [] } = useGetTickets({
+  const { data: tickets = [], isLoading: isLoadingTickets } = useGetTickets({
     projectId: filterProject,
     assigneeId: filterAssignee,
     priority: filterPriority,
@@ -172,5 +172,7 @@ export function useKanban() {
     isCreatingTicket: createTicketMutation.isPending,
     isCommentsPending: addCommentMutation.isPending,
     isDeletingTicket: deleteTicketMutation.isPending,
+    isUpdatingTicket: updateTicketMutation.isPending,
+    isLoadingTickets,
   };
 }
