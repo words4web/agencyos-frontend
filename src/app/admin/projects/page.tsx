@@ -11,6 +11,7 @@ import {
 import { useGetEmployees } from "@/services/employee/employee.hooks";
 import { ProjectCard } from "@/components/project/ProjectCard";
 import { CreateProjectModal } from "@/forms/project/CreateProjectModal";
+import { EditProjectModal } from "@/forms/project/EditProjectModal";
 import { AllocateTeamModal } from "@/forms/project/AllocateTeamModal";
 import { AddAssetModal } from "@/forms/project/AddAssetModal";
 import { EditAssetModal } from "@/forms/project/EditAssetModal";
@@ -25,6 +26,7 @@ export default function ProjectsPage() {
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [activeProject, setActiveProject] = useState<Project | null>(null);
+  const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
   const [assetProjectId, setAssetProjectId] = useState<string>("");
 
   const [editAsset, setEditAsset] = useState<IProjectAsset | null>(null);
@@ -88,7 +90,7 @@ export default function ProjectsPage() {
                   setEditProjectId(projectId);
                   setEditAsset(asset);
                 }}
-                onDeleteClick={(id) => setProjectToDeleteId(id)}
+                onEditClick={(project) => setProjectToEdit(project)}
               />
             ))
           )}
@@ -98,6 +100,12 @@ export default function ProjectsPage() {
       <CreateProjectModal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
+      />
+
+      <EditProjectModal
+        isOpen={!!projectToEdit}
+        onClose={() => setProjectToEdit(null)}
+        project={projectToEdit}
       />
 
       <AllocateTeamModal

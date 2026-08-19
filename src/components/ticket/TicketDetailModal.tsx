@@ -32,6 +32,7 @@ export function TicketDetailModal({
     actualHours: ticket?.actualHours || 0,
     assigneeId: ticket?.assignee?._id || "",
     description: ticket?.description || "",
+    title: ticket?.title || "",
     startDate: ticket?.startDate
       ? formatLocalDateTime(new Date(ticket.startDate))
       : "",
@@ -72,6 +73,7 @@ export function TicketDetailModal({
       formState.assigneeId !== (ticket?.assignee?._id || "") ||
       (isAdmin &&
         (formState.description !== (ticket?.description || "") ||
+          formState.title !== (ticket?.title || "") ||
           formState.startDate !== originalStartDate ||
           formState.dueDate !== originalDueDate ||
           formState.storyPoints !== originalStoryPoints ||
@@ -91,6 +93,7 @@ export function TicketDetailModal({
       } else {
         updates.assignee = null;
       }
+      updates.title = formState.title;
       updates.description = formState.description;
       updates.startDate = formState.startDate || null;
       updates.dueDate = formState.dueDate || null;
@@ -155,7 +158,7 @@ export function TicketDetailModal({
       isOpen={isOpen}
       onClose={handleClose}
       size="max-w-2xl"
-      title={ticket ? ticket?.title : ""}
+      title={formState.title || (ticket ? ticket?.title : "")}
       headerActions={headerActions}>
       {ticket && (
         <div className="flex flex-col gap-5">

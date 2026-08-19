@@ -195,6 +195,7 @@ export interface TicketInfoTabProps {
     actualHours: number;
     assigneeId: string;
     description: string;
+    title: string;
     startDate: string;
     dueDate: string;
     storyPoints: string;

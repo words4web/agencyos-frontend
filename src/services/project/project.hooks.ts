@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { projectService } from "./project.service";
 import {
   CreateProjectPayload,
+  UpdateProjectPayload,
   AssignEmployeesPayload,
   AddAssetPayload,
   ConfirmAssetUploadPayload,
@@ -38,6 +39,28 @@ export const useCreateProject = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+  });
+};
+
+export const useUpdateProject = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (variables: {
+      projectId: string;
+      payload: UpdateProjectPayload;
+    }) => {
+      return projectService.updateProject(
+        variables.projectId,
+        variables.payload,
+      );
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      queryClient.invalidateQueries({
+        queryKey: ["project", variables?.projectId],
+      });
     },
   });
 };

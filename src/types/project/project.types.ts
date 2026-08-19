@@ -49,6 +49,13 @@ export interface CreateProjectPayload {
   description?: string;
 }
 
+export interface UpdateProjectPayload {
+  name: string;
+  clientName: string;
+  clientEmail: string;
+  description?: string;
+}
+
 export interface AssignEmployeesPayload {
   employeeIds: string[];
 }
@@ -85,6 +92,7 @@ export interface ProjectCardProps {
   onAddAssetClick: (projectId: string) => void;
   onEditAssetClick?: (projectId: string, asset: IProjectAsset) => void;
   onDeleteClick?: (projectId: string) => void;
+  onEditClick?: (project: IProject) => void;
 }
 
 export interface AllocateTeamModalProps {
@@ -182,4 +190,10 @@ export interface CreateFolderModalProps {
   onClose: () => void;
   projectId: string;
   parentFolderId: string | null;
+}
+
+export interface EditProjectModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  project: IProject | null;
 }

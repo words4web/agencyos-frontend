@@ -29,7 +29,7 @@ export const createTicketSchema = z
   );
 
 export const addCommentSchema = z.object({
-  content: z.string().min(1, "Comment content cannot be empty"),
+  content: z.string().min(1, "Please type message"),
 });
 
 export type CreateTicketFormValues = z.infer<typeof createTicketSchema>;

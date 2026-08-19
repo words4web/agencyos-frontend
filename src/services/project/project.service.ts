@@ -4,6 +4,7 @@ import { AxiosResponse } from "axios";
 import {
   IProject,
   CreateProjectPayload,
+  UpdateProjectPayload,
   AssignEmployeesPayload,
   AddAssetPayload,
   ConfirmAssetUploadPayload,
@@ -26,6 +27,16 @@ export const projectService = {
     payload: CreateProjectPayload,
   ): Promise<AxiosResponse<{ success: boolean; data: IProject }>> => {
     return axiosInstance.post(API_ROUTES.PROJECTS.BASE, payload);
+  },
+
+  updateProject: async (
+    projectId: string,
+    payload: UpdateProjectPayload,
+  ): Promise<AxiosResponse<{ success: boolean; data: IProject }>> => {
+    return axiosInstance.patch(
+      `${API_ROUTES.PROJECTS.BASE}/${projectId}`,
+      payload,
+    );
   },
 
   assignEmployees: async (
