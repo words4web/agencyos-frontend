@@ -67,3 +67,16 @@ export const useAddComment = () => {
     },
   });
 };
+
+export const useDeleteTicket = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (ticketId: string) => {
+      return ticketService.deleteTicket(ticketId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tickets"] });
+    },
+  });
+};

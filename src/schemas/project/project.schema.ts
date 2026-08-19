@@ -32,3 +32,15 @@ export type CreateProjectFormValues = z.infer<typeof createProjectSchema>;
 export type AssignEmployeesFormValues = z.infer<typeof assignEmployeesSchema>;
 export type AddAssetFormValues = z.infer<typeof addAssetSchema>;
 export type EditAssetFormValues = z.infer<typeof editAssetSchema>;
+
+export const updateProjectSchema = z.object({
+  name: z.string().min(1, "Project name is required"),
+  clientName: z.string().min(1, "Client name is required"),
+  clientEmail: z
+    .string()
+    .min(1, "Client email is required")
+    .email("Invalid email format"),
+  description: z.string().optional(),
+});
+
+export type UpdateProjectFormValues = z.infer<typeof updateProjectSchema>;

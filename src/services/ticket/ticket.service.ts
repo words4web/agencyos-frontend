@@ -36,4 +36,10 @@ export const ticketService = {
   ): Promise<AxiosResponse<{ success: boolean; data: ITicket }>> => {
     return axiosInstance.post(API_ROUTES.TICKETS.COMMENTS(ticketId), payload);
   },
+
+  deleteTicket: async (
+    ticketId: string,
+  ): Promise<AxiosResponse<{ success: boolean; data: ITicket }>> => {
+    return axiosInstance.delete(API_ROUTES.TICKETS.DETAIL(ticketId));
+  },
 };

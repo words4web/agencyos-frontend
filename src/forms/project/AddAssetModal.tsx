@@ -11,15 +11,18 @@ import {
 import { useAddAsset } from "@/services/project/project.hooks";
 import { AddAssetModalProps } from "@/types/project/project.types";
 import { useFileUpload } from "@/hooks/useFileUpload";
-import { EAssetProvider } from "@/enums";
+import { EAssetProvider, EUploadStatus } from "@/enums";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { LinkAssetTab } from "./LinkAssetTab";
 import { UploadFilesTab } from "./UploadFilesTab";
+import { toast } from "sonner";
+import { MAX_CONCURRENT_FILES } from "@/constants/project";
 
 export function AddAssetModal({
   isOpen,
   onClose,
   projectId,
+  parentFolderId,
 }: AddAssetModalProps) {
   const [activeTab, setActiveTab] = useState<"link" | "upload">("link");
   const addAssetMutation = useAddAsset();
@@ -38,12 +41,19 @@ export function AddAssetModal({
   });
 
   const { uploads, prepareUploads, startUploads, clearUploads, removeUpload } =
-    useFileUpload(projectId);
+    useFileUpload(projectId, undefined, parentFolderId);
 
   const onSubmit = (data: AddAssetFormValues) => {
     setFormError("");
     addAssetMutation.mutate(
-      { projectId, payload: { ...data, provider: EAssetProvider.URL } },
+      {
+        projectId,
+        payload: {
+          ...data,
+          provider: EAssetProvider.URL,
+          parentFolderId,
+        },
+      },
       {
         onSuccess: () => {
           reset();
@@ -60,6 +70,20 @@ export function AddAssetModal({
   };
 
   const handleFilesSelected = (files: File[]) => {
+    const activeCount = uploads.filter(
+      (up) =>
+        up.status === EUploadStatus.UPLOADING ||
+        up.status === EUploadStatus.IDLE,
+    ).length;
+    const currentSelected = selectedFiles?.length || 0;
+
+    if (activeCount + currentSelected + files?.length > MAX_CONCURRENT_FILES) {
+      toast.error(
+        `You can only select up to ${MAX_CONCURRENT_FILES} files. (Selected: ${currentSelected}, Active: ${activeCount})`,
+      );
+      return;
+    }
+
     const validated = prepareUploads(files);
     if (validated) {
       setSelectedFiles((prev) => (prev ? [...prev, ...validated] : validated));

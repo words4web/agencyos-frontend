@@ -8,6 +8,7 @@ import { CreateTicketForm } from "@/forms/ticket/CreateTicketForm";
 import { KanbanFilters } from "@/components/ticket/KanbanFilters";
 import { KanbanBoard } from "@/components/ticket/KanbanBoard";
 import { TicketDetailModal } from "@/components/ticket/TicketDetailModal";
+import { KanbanBoardSkeleton } from "@/components/skeleton/KanbanBoardSkeleton";
 
 export default function KanbanPage() {
   const {
@@ -29,10 +30,14 @@ export default function KanbanPage() {
     handleCloseDetails,
     handleCreateTicket,
     handleUpdateTicket,
+    handleDeleteTicket,
     handleAddComment,
     clearFilters,
     isCreatingTicket,
     isCommentsPending,
+    isDeletingTicket,
+    isUpdatingTicket,
+    isLoadingTickets,
   } = useKanban();
 
   return (
@@ -66,7 +71,11 @@ export default function KanbanPage() {
         clearFilters={clearFilters}
       />
 
-      <KanbanBoard tickets={tickets} onTicketClick={setSelectedTicket} />
+      {isLoadingTickets ? (
+        <KanbanBoardSkeleton />
+      ) : (
+        <KanbanBoard tickets={tickets} onTicketClick={setSelectedTicket} />
+      )}
 
       <Modal
         isOpen={isCreateOpen}
@@ -89,8 +98,12 @@ export default function KanbanPage() {
         isOpen={!!selectedTicket}
         onClose={handleCloseDetails}
         onUpdateTicket={handleUpdateTicket}
+        onDeleteTicket={handleDeleteTicket}
         onSubmitComment={handleAddComment}
+        employees={employees}
         isCommentsPending={isCommentsPending}
+        isDeleting={isDeletingTicket}
+        isUpdating={isUpdatingTicket}
       />
     </>
   );

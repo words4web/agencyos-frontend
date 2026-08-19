@@ -53,3 +53,16 @@ export interface NotificationDropdownProps {
   loadMore: (e: React.MouseEvent) => void;
   hasMore: boolean;
 }
+
+export interface FloatingBannerProps {
+  isOpen: boolean;
+  title: string;
+  description?: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
+  onDismiss: () => void;
+  variant?: "info" | "warning" | "danger" | "success";
+}

@@ -1,4 +1,5 @@
-import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   createTicketSchema,
@@ -9,6 +10,7 @@ import { Button } from "@/components/Button";
 import { ShieldAlert, Info } from "lucide-react";
 import { ETicketStatus, ETicketPriority } from "@/enums";
 import { CreateTicketFormProps } from "@/types/ticket/ticket.types";
+import { formatLocalDateTime } from "@/utils/ticket";
 
 export function CreateTicketForm({
   projects,
@@ -18,9 +20,19 @@ export function CreateTicketForm({
   serverError,
   isPending,
 }: CreateTicketFormProps) {
+  const [initialDates] = useState(() => {
+    const now = new Date();
+    const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
+    return {
+      startDate: formatLocalDateTime(now),
+      dueDate: formatLocalDateTime(oneHourLater),
+    };
+  });
+
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<CreateTicketFormValues>({
     resolver: zodResolver(createTicketSchema),
@@ -31,12 +43,18 @@ export function CreateTicketForm({
       assignee: "",
       status: ETicketStatus.TODO,
       priority: ETicketPriority.MEDIUM,
-      dueDate: "",
+      dueDate: initialDates.dueDate,
       storyPoints: undefined,
       estimatedHours: undefined,
       tags: "",
-      startDate: "",
+      startDate: initialDates.startDate,
     },
+  });
+
+  const startDateValue = useWatch({
+    control,
+    name: "startDate",
+    defaultValue: initialDates.startDate,
   });
 
   return (
@@ -145,14 +163,15 @@ export function CreateTicketForm({
         <Input
           id="startDate"
           label="Start Date"
-          type="date"
+          type="datetime-local"
           {...register("startDate")}
           error={errors?.startDate?.message}
         />
         <Input
           id="dueDate"
           label="Due Date"
-          type="date"
+          type="datetime-local"
+          min={startDateValue}
           {...register("dueDate")}
           error={errors?.dueDate?.message}
         />

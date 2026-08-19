@@ -1,4 +1,4 @@
-import { UserPlus, Trash2, FolderOpen } from "lucide-react";
+import { UserPlus, Trash2, FolderOpen, Edit2 } from "lucide-react";
 import { ProjectCardProps } from "@/types/project/project.types";
 import Link from "next/link";
 
@@ -8,6 +8,7 @@ export function ProjectCard({
   onAddAssetClick,
   onEditAssetClick,
   onDeleteClick,
+  onEditClick,
 }: ProjectCardProps) {
   return (
     <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-6 flex flex-col justify-between backdrop-blur-md hover:border-slate-700 transition-colors">
@@ -15,6 +16,14 @@ export function ProjectCard({
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-lg font-bold text-slate-100">{project?.name}</h3>
           <div className="flex items-center gap-2">
+            {onEditClick && (
+              <button
+                onClick={() => onEditClick(project)}
+                className="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 text-indigo-400 hover:text-indigo-300 hover:bg-slate-900 transition-colors shadow-sm flex items-center justify-center cursor-pointer"
+                title="Edit Project">
+                <Edit2 size={13} />
+              </button>
+            )}
             {onDeleteClick && (
               <button
                 onClick={() => onDeleteClick(project?._id)}

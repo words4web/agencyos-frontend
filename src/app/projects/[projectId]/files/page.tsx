@@ -6,7 +6,7 @@ import { useGetProject } from "@/services/project/project.hooks";
 import { FileExplorer } from "@/components/project/FileExplorer";
 import { Loader2 } from "lucide-react";
 
-export default function ProjectFilesPage() {
+export default function EmployeeProjectFilesPage() {
   const params = useParams();
   const projectId = params.projectId as string;
 

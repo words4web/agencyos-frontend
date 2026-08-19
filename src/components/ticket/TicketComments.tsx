@@ -30,7 +30,7 @@ export function TicketComments({
 
       <div
         ref={scrollContainerRef}
-        className="flex flex-col gap-4 max-h-72 overflow-y-auto mb-4 pr-1.5 custom-scrollbar">
+        className="flex flex-col gap-3 max-h-[420px] overflow-y-auto mb-4 pr-1.5 custom-scrollbar">
         {comments?.length === 0 ? (
           <span className="text-sm text-slate-500 italic block py-4 text-center">
             No comments posted yet. Start the conversation!
@@ -41,22 +41,22 @@ export function TicketComments({
             return (
               <div
                 key={idx}
-                className={`flex flex-col max-w-[85%] ${
+                className={`flex flex-col max-w-[70%] gap-1 ${
                   isCurrentUser
                     ? "self-end items-end"
                     : "self-start items-start"
                 }`}>
-                <div className="flex items-center gap-1.5 text-xs mb-1 px-1">
+                <div className="flex items-baseline gap-1.5 text-xs px-1">
                   <span className="font-semibold text-slate-400">
                     {isCurrentUser ? "You" : c.user?.name}
                   </span>
-                  <span className="text-[10px] bg-slate-900 border border-slate-800/80 px-1 py-0.2 rounded text-slate-500 font-bold uppercase tracking-wider">
+                  <span className="text-[9px] text-slate-500 font-medium uppercase tracking-wider">
                     {c.user?.designation}
                   </span>
                 </div>
 
                 <div
-                  className={`p-3 rounded-2xl border leading-relaxed shadow-sm transition-all ${
+                  className={`p-2.5 px-3.5 rounded-2xl border leading-relaxed shadow-sm transition-all ${
                     isCurrentUser
                       ? "rounded-tr-none bg-indigo-950/20 border-indigo-900/60 text-slate-100"
                       : "rounded-tl-none bg-slate-900/40 border-slate-800 text-slate-200"
@@ -66,7 +66,7 @@ export function TicketComments({
                   </p>
                 </div>
 
-                <span className="text-[10px] text-slate-500 mt-1 px-1">
+                <span className="text-[9px] text-slate-500/80 px-1 mt-0.5">
                   {formatTicketDate(c?.createdAt, {
                     withTime: true,
                     withYear: false,

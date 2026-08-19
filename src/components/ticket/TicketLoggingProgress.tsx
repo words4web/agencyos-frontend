@@ -1,6 +1,5 @@
 import { TicketLoggingProgressProps } from "@/types/ticket/ticket.types";
 import { ETicketStatus } from "@/enums";
-import { Tag } from "lucide-react";
 
 export function TicketLoggingProgress({
   ticket,
@@ -20,7 +19,7 @@ export function TicketLoggingProgress({
           <select
             value={localStatus}
             onChange={(e) => setLocalStatus(e.target.value as ETicketStatus)}
-            className="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+            className="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-205 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 min-h-[28px]">
             <option value={ETicketStatus.BACKLOG}>Backlog</option>
             <option value={ETicketStatus.TODO}>Todo</option>
             <option value={ETicketStatus.IN_PROGRESS}>In Progress</option>
@@ -28,7 +27,7 @@ export function TicketLoggingProgress({
             <option value={ETicketStatus.COMPLETED}>Completed</option>
           </select>
         ) : (
-          <span className="text-sm font-semibold text-slate-300 capitalize">
+          <span className="text-xs font-semibold text-slate-300 capitalize">
             {localStatus?.replace(/_/g, " ")}
           </span>
         )}
@@ -39,7 +38,7 @@ export function TicketLoggingProgress({
           Actual Time Spent
         </span>
         {canEdit ? (
-          <div className="flex items-center gap-1.5">
+          <div className="relative w-full">
             <input
               type="number"
               step="0.5"
@@ -48,39 +47,17 @@ export function TicketLoggingProgress({
               onChange={(e) =>
                 setLocalActualHours(Math.max(0, Number(e.target.value)))
               }
-              className="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+              className="w-full pl-3 pr-10 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-205 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 min-h-[28px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
-            <span className="text-sm text-slate-400 font-semibold uppercase tracking-wider">
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-500 font-bold uppercase tracking-wider pointer-events-none">
               hrs
             </span>
           </div>
         ) : (
-          <span className="text-sm font-semibold text-slate-300">
-            {localActualHours > 0 ? `${localActualHours} hrs` : "Not logged"}
+          <span className="text-xs font-semibold text-slate-300">
+            {localActualHours > 0 ? `${localActualHours} hrs` : "0 hrs"}
           </span>
         )}
-      </div>
-
-      <div className="col-span-1 md:col-span-2 border-t border-slate-900/60 pt-3 flex flex-col gap-1.5">
-        <span className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1">
-          <Tag size={10} className="text-indigo-400" />
-          Tags
-        </span>
-        <div className="flex flex-wrap gap-1">
-          {ticket?.tags && ticket?.tags?.length > 0 ? (
-            ticket?.tags?.map((tag, i) => (
-              <span
-                key={`${tag}-${i}`}
-                className="text-[10px] font-bold bg-indigo-950/40 text-indigo-400 border border-indigo-900/60 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                {tag}
-              </span>
-            ))
-          ) : (
-            <span className="text-sm text-slate-500 italic">
-              No tags associated with this ticket
-            </span>
-          )}
-        </div>
       </div>
     </div>
   );
