@@ -22,6 +22,13 @@ export const addAssetSchema = z.object({
   category: z.string().min(1, "Category is required"),
 });
 
+export const editAssetSchema = z.object({
+  name: z.string().min(1, "Asset name is required"),
+  url: z.string().url("Invalid URL format").optional().or(z.literal("")),
+  category: z.string().min(1, "Category is required"),
+});
+
 export type CreateProjectFormValues = z.infer<typeof createProjectSchema>;
 export type AssignEmployeesFormValues = z.infer<typeof assignEmployeesSchema>;
 export type AddAssetFormValues = z.infer<typeof addAssetSchema>;
+export type EditAssetFormValues = z.infer<typeof editAssetSchema>;

@@ -4,7 +4,10 @@ import { useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { Plus, LayoutDashboard } from "lucide-react";
 import { IProject as Project } from "@/types/project/project.types";
-import { useGetProjects } from "@/services/project/project.hooks";
+import {
+  useGetProjects,
+  useDeleteProject,
+} from "@/services/project/project.hooks";
 import { useGetEmployees } from "@/services/employee/employee.hooks";
 import { ProjectCard } from "@/components/project/ProjectCard";
 import { CreateProjectModal } from "@/forms/project/CreateProjectModal";
@@ -12,10 +15,13 @@ import { AllocateTeamModal } from "@/forms/project/AllocateTeamModal";
 import { AddAssetModal } from "@/forms/project/AddAssetModal";
 import { EditAssetModal } from "@/forms/project/EditAssetModal";
 import { IProjectAsset } from "@/types/project/project.types";
+import { toast } from "sonner";
+import { ConfirmModal } from "@/components/ConfirmModal";
 
 export default function ProjectsPage() {
   const { data: projects = [] } = useGetProjects();
   const { data: employees = [] } = useGetEmployees();
+  const deleteProjectMutation = useDeleteProject();
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [activeProject, setActiveProject] = useState<Project | null>(null);
@@ -23,9 +29,36 @@ export default function ProjectsPage() {
 
   const [editAsset, setEditAsset] = useState<IProjectAsset | null>(null);
   const [editProjectId, setEditProjectId] = useState<string>("");
+  const [projectToDeleteId, setProjectToDeleteId] = useState<string | null>(
+    null,
+  );
+
+  const handleConfirmDeleteProject = () => {
+    if (!projectToDeleteId) return;
+    deleteProjectMutation.mutate(projectToDeleteId, {
+      onSuccess: () => {
+        toast.success("Project deleted successfully");
+        setProjectToDeleteId(null);
+      },
+      onError: (err: any) => {
+        toast.error(err?.response?.data?.message || "Failed to delete project");
+        setProjectToDeleteId(null);
+      },
+    });
+  };
 
   return (
     <>
+      <ConfirmModal
+        isOpen={!!projectToDeleteId}
+        title="Delete Project"
+        description="Are you sure you want to delete this project? This will permanently delete the project from AgencyOS and move its associated Google Drive folder to trash."
+        confirmLabel="Delete"
+        variant="danger"
+        isLoading={deleteProjectMutation.isPending}
+        onConfirm={handleConfirmDeleteProject}
+        onClose={() => setProjectToDeleteId(null)}
+      />
       <div className="max-w-6xl mx-auto">
         <PageHeader
           title="Project Settings"
@@ -55,6 +88,7 @@ export default function ProjectsPage() {
                   setEditProjectId(projectId);
                   setEditAsset(asset);
                 }}
+                onDeleteClick={(id) => setProjectToDeleteId(id)}
               />
             ))
           )}
