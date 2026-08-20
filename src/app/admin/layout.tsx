@@ -3,7 +3,6 @@
 import React from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { CommonLoader } from "@/components/CommonLoader";
-import { Sidebar } from "@/components/Sidebar";
 
 export default function AdminLayout({
   children,
@@ -17,9 +16,8 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-950">
-      <Sidebar />
-      <main className="flex-1 overflow-y-auto p-8">{children}</main>
-    </div>
+    <main className="flex-1 overflow-y-auto p-8 text-slate-100 min-w-0 bg-slate-950">
+      {children}
+    </main>
   );
 }

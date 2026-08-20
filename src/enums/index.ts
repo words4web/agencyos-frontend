@@ -38,3 +38,9 @@ export enum EUploadStatus {
   DONE = "done",
   ERROR = "error",
 }
+
+export enum EEventType {
+  HOLIDAY = "holiday",
+  MEETING = "meeting",
+  REMINDER = "reminder",
+}

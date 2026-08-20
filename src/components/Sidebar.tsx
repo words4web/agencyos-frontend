@@ -9,15 +9,12 @@ import {
   LayoutDashboard,
   Users,
   FolderKanban,
-  LogOut,
   Terminal,
   User,
+  Calendar,
 } from "lucide-react";
 import { EUserRole } from "@/enums";
 import { ROUTES } from "@/constants/route";
-import { useLogout } from "@/services/auth/auth.hooks";
-import { ConfirmModal } from "./ConfirmModal";
-import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { setSidebarOpen } from "@/store/notificationSlice";
 import { ChevronLeft } from "lucide-react";
@@ -29,14 +26,6 @@ export const Sidebar: React.FC = () => {
   const { isSidebarOpen } = useSelector(
     (state: RootState) => state.notification,
   );
-  const logoutMutation = useLogout();
-  const [isConfirmLogoutOpen, setIsConfirmLogoutOpen] = useState(false);
-
-  const handleLogout = () => {
-    setIsConfirmLogoutOpen(false);
-    logoutMutation.mutate();
-  };
-
   const handleCloseSidebar = () => {
     dispatch(setSidebarOpen(false));
   };
@@ -67,6 +56,12 @@ export const Sidebar: React.FC = () => {
       path: ROUTES.ADMIN_EMPLOYEES,
       icon: Users,
       visible: isAdmin,
+    },
+    {
+      name: "Calendar",
+      path: ROUTES.CALENDAR,
+      icon: Calendar,
+      visible: true,
     },
     {
       name: "Profile",
@@ -166,30 +161,6 @@ export const Sidebar: React.FC = () => {
               );
             })}
         </nav>
-
-        <div
-          className={`p-4 border-t border-slate-900/50 flex flex-col gap-2 ${isSidebarOpen ? "" : "items-center"}`}>
-          <button
-            onClick={() => setIsConfirmLogoutOpen(true)}
-            className={`w-full flex items-center text-slate-400 hover:text-rose-400 hover:bg-rose-500/5 border border-transparent hover:border-rose-500/10 rounded-xl text-sm font-medium transition-all duration-200 ${
-              isSidebarOpen ? "px-4 py-3 gap-3" : "py-3 w-12 justify-center"
-            }`}>
-            <LogOut size={17} />
-            {isSidebarOpen && <span>Sign Out</span>}
-          </button>
-        </div>
-
-        <ConfirmModal
-          isOpen={isConfirmLogoutOpen}
-          title="Confirm Sign Out"
-          description="Are you sure you want to sign out of your workspace? This will clear your current session parameters and unregister push alerts."
-          confirmLabel="Sign Out"
-          cancelLabel="Cancel"
-          isLoading={logoutMutation.isPending}
-          variant="danger"
-          onConfirm={handleLogout}
-          onClose={() => setIsConfirmLogoutOpen(false)}
-        />
       </aside>
     </>
   );

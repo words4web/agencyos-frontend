@@ -1,15 +1,31 @@
 "use client";
 
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { Sidebar } from "@/components/Sidebar";
 import { PageHeader } from "@/components/PageHeader";
 import { NotificationToggle } from "@/components/notification/NotificationToggle";
 import { BlockedPermissionBanner } from "@/components/notification/BlockedPermissionBanner";
-import { User, Mail, Shield, BadgeCheck, Briefcase } from "lucide-react";
+import {
+  User,
+  Mail,
+  Shield,
+  BadgeCheck,
+  Briefcase,
+  LogOut,
+} from "lucide-react";
+import { ConfirmModal } from "@/components/ConfirmModal";
+import { useLogout } from "@/services/auth/auth.hooks";
 
 export default function ProfilePage() {
   const { user } = useSelector((state: RootState) => state.auth);
+  const logoutMutation = useLogout();
+  const [isConfirmLogoutOpen, setIsConfirmLogoutOpen] = useState(false);
+
+  const handleLogout = () => {
+    setIsConfirmLogoutOpen(false);
+    logoutMutation.mutate();
+  };
 
   const infoItems = [
     {
@@ -37,13 +53,17 @@ export default function ProfilePage() {
   ];
 
   return (
-    <div className="flex h-screen bg-slate-950 text-slate-100">
-      <Sidebar />
+    <>
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto p-8">
         <PageHeader
           icon={User}
           title="My Profile"
           subtitle="Manage your profile and preferences"
+          action={{
+            label: "Sign Out",
+            icon: LogOut,
+            onClick: () => setIsConfirmLogoutOpen(true),
+          }}
         />
 
         <main className="flex-1 p-6 max-w-4xl w-full mx-auto flex flex-col gap-6">
@@ -94,6 +114,18 @@ export default function ProfilePage() {
           </div>
         </main>
       </div>
-    </div>
+
+      <ConfirmModal
+        isOpen={isConfirmLogoutOpen}
+        title="Confirm Sign Out"
+        description="Are you sure you want to sign out of your workspace? This will clear your current session parameters and unregister push alerts."
+        confirmLabel="Sign Out"
+        cancelLabel="Cancel"
+        isLoading={logoutMutation.isPending}
+        variant="danger"
+        onConfirm={handleLogout}
+        onClose={() => setIsConfirmLogoutOpen(false)}
+      />
+    </>
   );
 }
