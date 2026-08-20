@@ -28,4 +28,7 @@ export const API_ROUTES = {
       REMOVE: "/api/notifications/devices/remove",
     },
   },
+  EVENTS: {
+    BASE: "/api/events",
+  },
 };

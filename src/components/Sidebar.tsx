@@ -11,6 +11,7 @@ import {
   FolderKanban,
   Terminal,
   User,
+  Calendar,
 } from "lucide-react";
 import { EUserRole } from "@/enums";
 import { ROUTES } from "@/constants/route";
@@ -55,6 +56,12 @@ export const Sidebar: React.FC = () => {
       path: ROUTES.ADMIN_EMPLOYEES,
       icon: Users,
       visible: isAdmin,
+    },
+    {
+      name: "Calendar",
+      path: ROUTES.CALENDAR,
+      icon: Calendar,
+      visible: true,
     },
     {
       name: "Profile",
