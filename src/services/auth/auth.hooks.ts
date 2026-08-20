@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authService } from "./auth.service";
 import { LoginPayload } from "@/types/auth/auth.types";
 import { useDispatch } from "react-redux";
@@ -32,16 +32,19 @@ export const useLogin = () => {
 export const useLogout = () => {
   const dispatch = useDispatch();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: () => {
       return authService.logout();
     },
     onSuccess: () => {
+      queryClient.clear();
       dispatch(clearAuth());
       router.push(ROUTES.LOGIN);
     },
     onError: () => {
+      queryClient.clear();
       dispatch(clearAuth());
       router.push(ROUTES.LOGIN);
     },

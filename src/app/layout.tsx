@@ -6,6 +6,7 @@ import { QueryProvider } from "@/providers/QueryProvider";
 import { FcmProvider } from "@/providers/FcmProvider";
 import { Toaster } from "sonner";
 import { GlobalNotificationBanner } from "@/components/notification/GlobalNotificationBanner";
+import { AppLayout } from "@/components/AppLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,7 +38,7 @@ export default function RootLayout({
           <QueryProvider>
             <FcmProvider>
               <GlobalNotificationBanner />
-              {children}
+              <AppLayout>{children}</AppLayout>
               <Toaster theme="dark" position="top-right" richColors />
             </FcmProvider>
           </QueryProvider>
