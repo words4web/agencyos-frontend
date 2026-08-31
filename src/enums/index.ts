@@ -43,4 +43,11 @@ export enum EEventType {
   HOLIDAY = "holiday",
   MEETING = "meeting",
   REMINDER = "reminder",
+  LEAVE = "leave",
 }
+
+export enum ELeaveType {
+  PAID = "paid",
+  UNPAID = "unpaid",
+}
+

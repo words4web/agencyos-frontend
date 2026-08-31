@@ -5,7 +5,7 @@ export const eventFormSchema = z
   .object({
     title: z.string().min(1, "Event title is required"),
     description: z.string().optional(),
-    type: z.enum([EEventType.HOLIDAY, EEventType.MEETING, EEventType.REMINDER]),
+    type: z.enum([EEventType.HOLIDAY, EEventType.MEETING, EEventType.REMINDER, EEventType.LEAVE]),
     date: z.string().min(1, "Event date is required"),
     time: z.string().optional(),
     meetingLink: z.string().optional(),

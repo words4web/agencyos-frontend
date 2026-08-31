@@ -15,6 +15,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   handleNotificationClick,
   loadMore,
   hasMore,
+  isLoading = false,
 }) => {
   return (
     <div className="absolute right-0 mt-2.5 w-80 sm:w-96 rounded-2xl bg-slate-950/95 border border-slate-800/90 shadow-2xl backdrop-blur-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-3 duration-200">
@@ -50,7 +51,6 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                 className={`p-4 flex gap-3 cursor-pointer transition-colors relative hover:bg-slate-900/40 ${
                   !n?.isRead ? "bg-indigo-950/5" : ""
                 }`}>
-                {/* Status Indicator Dot */}
                 {!n?.isRead && (
                   <span className="absolute left-2 top-4 h-1.5 w-1.5 rounded-full bg-indigo-500" />
                 )}
@@ -80,13 +80,21 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
               </div>
             ))}
 
-            {/* Pagination Load More Button */}
             {hasMore && (
-              <button
-                onClick={loadMore}
-                className="w-full py-3 text-[11px] font-semibold text-indigo-400 hover:text-indigo-300 hover:bg-slate-900/20 text-center transition-colors border-t border-slate-900">
-                Load More
-              </button>
+              <div className="w-full border-t border-slate-900">
+                {isLoading ? (
+                  <div className="w-full py-3 flex items-center justify-center gap-2 text-[11px] font-semibold text-slate-500">
+                    <div className="w-3.5 h-3.5 border border-indigo-500 border-t-transparent rounded-full animate-spin" />
+                    <span>Loading...</span>
+                  </div>
+                ) : (
+                  <button
+                    onClick={loadMore}
+                    className="w-full py-3 text-[11px] font-semibold text-indigo-400 hover:text-indigo-300 hover:bg-slate-900/20 text-center transition-colors">
+                    Load More
+                  </button>
+                )}
+              </div>
             )}
           </>
         ) : (

@@ -19,6 +19,7 @@ export function TicketDetailModal({
   onDeleteTicket,
   onSubmitComment,
   employees,
+  projects = [],
   isCommentsPending,
   isDeleting = false,
   isUpdating = false,
@@ -31,6 +32,7 @@ export function TicketDetailModal({
     status: ticket?.status || ETicketStatus.TODO,
     actualHours: ticket?.actualHours || 0,
     assigneeId: ticket?.assignee?._id || "",
+    projectId: ticket?.project?._id || "",
     description: ticket?.description || "",
     title: ticket?.title || "",
     startDate: ticket?.startDate
@@ -72,7 +74,8 @@ export function TicketDetailModal({
       formState.actualHours !== (ticket?.actualHours || 0) ||
       formState.assigneeId !== (ticket?.assignee?._id || "") ||
       (isAdmin &&
-        (formState.description !== (ticket?.description || "") ||
+        (formState.projectId !== (ticket?.project?._id || "") ||
+          formState.description !== (ticket?.description || "") ||
           formState.title !== (ticket?.title || "") ||
           formState.startDate !== originalStartDate ||
           formState.dueDate !== originalDueDate ||
@@ -92,6 +95,9 @@ export function TicketDetailModal({
         updates.assignee = formState.assigneeId;
       } else {
         updates.assignee = null;
+      }
+      if (formState.projectId) {
+        updates.project = formState.projectId;
       }
       updates.title = formState.title;
       updates.description = formState.description;
@@ -201,6 +207,7 @@ export function TicketDetailModal({
               <TicketInfoTab
                 ticket={ticket}
                 employees={employees}
+                projects={projects}
                 isAdmin={isAdmin}
                 canEdit={canEdit}
                 formState={formState}

@@ -10,6 +10,7 @@ export const ROUTES = {
   ADMIN_EMPLOYEES: "/admin/employees",
   PROFILE: "/profile",
   CALENDAR: "/calendar",
+  LEAVES: "/leaves",
 };
 
 export type Route = (typeof ROUTES)[keyof typeof ROUTES];

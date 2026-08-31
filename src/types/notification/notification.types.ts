@@ -52,6 +52,7 @@ export interface NotificationDropdownProps {
   handleNotificationClick: (n: INotification) => void;
   loadMore: (e: React.MouseEvent) => void;
   hasMore: boolean;
+  isLoading?: boolean;
 }
 
 export interface FloatingBannerProps {

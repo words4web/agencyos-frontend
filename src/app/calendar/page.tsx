@@ -53,7 +53,7 @@ export default function CalendarPage() {
   } = useCalendar();
 
   return (
-    <div className="max-w-6xl mx-auto w-full flex flex-col gap-6">
+    <div className="max-w-6xl mx-auto w-full flex flex-col gap-6 my-6">
       <PageHeader
         title="Calendar"
         subtitle="Manage agency events, holidays, and deadlines"

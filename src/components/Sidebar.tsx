@@ -12,6 +12,7 @@ import {
   Terminal,
   User,
   Calendar,
+  CalendarClock,
 } from "lucide-react";
 import { EUserRole } from "@/enums";
 import { ROUTES } from "@/constants/route";
@@ -61,6 +62,12 @@ export const Sidebar: React.FC = () => {
       name: "Calendar",
       path: ROUTES.CALENDAR,
       icon: Calendar,
+      visible: true,
+    },
+    {
+      name: "Leaves",
+      path: ROUTES.LEAVES,
+      icon: CalendarClock,
       visible: true,
     },
     {

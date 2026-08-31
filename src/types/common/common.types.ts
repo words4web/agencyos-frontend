@@ -38,3 +38,24 @@ export interface PageHeaderProps {
     onClick: () => void;
   };
 }
+export interface Column<T> {
+  header: string;
+  accessor: (row: T) => React.ReactNode;
+  className?: string;
+}
+
+export interface ActionMenuItem<T> {
+  label: string;
+  onClick: (row: T) => void;
+  className?: string;
+}
+
+export interface TableProps<T> {
+  data: T[];
+  columns: Column<T>[];
+  isLoading?: boolean;
+  loadingMessage?: string;
+  emptyMessage?: string;
+  actions?: ActionMenuItem<T>[];
+  onRowClick?: (row: T) => void;
+}

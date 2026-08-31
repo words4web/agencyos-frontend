@@ -42,7 +42,7 @@ export function useCalendar() {
   const { data: tickets = [] } = useGetTickets(
     isAdmin ? {} : { assigneeId: user?.id || "" },
   );
-  const { data: employees = [] } = useGetEmployees();
+  const { data: employees = [] } = useGetEmployees(isAdmin);
 
   const createEventMutation = useCreateEvent();
   const updateEventMutation = useUpdateEvent();
