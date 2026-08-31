@@ -5,9 +5,13 @@ import { Folder, User, Sliders, Tag } from "lucide-react";
 export function TicketProperties({
   ticket,
   employees = [],
+  projects = [],
   canEditAssignee = false,
+  canEditProject = false,
   localAssigneeId,
+  localProjectId,
   onUpdateAssignee,
+  onUpdateProject,
 }: TicketPropertiesProps) {
   return (
     <div className="flex flex-col gap-3.5 bg-slate-950/40 p-4 border border-slate-800/80 rounded-xl min-h-[174px]">
@@ -24,9 +28,22 @@ export function TicketProperties({
           <span className="text-[10px] uppercase font-bold text-slate-500">
             Project
           </span>
-          <span className="text-xs font-semibold text-slate-200 truncate mt-0.5">
-            {ticket?.project?.name}
-          </span>
+          {canEditProject ? (
+            <select
+              value={localProjectId || ""}
+              onChange={(e) => onUpdateProject?.(e.target.value)}
+              className="text-xs font-semibold text-slate-200 bg-slate-900 border border-slate-800/80 rounded px-2 py-1 focus:outline-none focus:border-indigo-500 w-full mt-1 min-h-[28px]">
+              {projects?.map((proj) => (
+                <option key={proj?._id} value={proj?._id}>
+                  {proj?.name}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <span className="text-xs font-semibold text-slate-200 truncate mt-0.5">
+              {ticket?.project?.name}
+            </span>
+          )}
         </div>
       </div>
 

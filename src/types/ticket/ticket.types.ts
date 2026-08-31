@@ -121,6 +121,7 @@ export interface TicketDetailModalProps {
   onDeleteTicket?: (ticketId: string) => void;
   onSubmitComment: (values: AddCommentFormValues) => void;
   employees: IEmployee[];
+  projects: IProject[];
   isCommentsPending?: boolean;
   isDeleting?: boolean;
   isUpdating?: boolean;
@@ -172,9 +173,13 @@ export interface FormatTicketDateOptions {
 export interface TicketPropertiesProps {
   ticket: ITicket;
   employees?: IEmployee[];
+  projects?: IProject[];
   canEditAssignee?: boolean;
+  canEditProject?: boolean;
   localAssigneeId?: string;
+  localProjectId?: string;
   onUpdateAssignee?: (assigneeId: string) => void;
+  onUpdateProject?: (projectId: string) => void;
 }
 
 export interface TimelineCardProps {
@@ -188,12 +193,14 @@ export interface TimelineCardProps {
 export interface TicketInfoTabProps {
   ticket: ITicket;
   employees: IEmployee[];
+  projects: IProject[];
   isAdmin: boolean;
   canEdit: boolean;
   formState: {
     status: any;
     actualHours: number;
     assigneeId: string;
+    projectId: string;
     description: string;
     title: string;
     startDate: string;

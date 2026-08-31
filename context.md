@@ -236,3 +236,20 @@ const canEdit =
 - **Header Integrated Toggle**: Moved the Sidebar expand/collapse toggle button from the bottom of the navigation area to the top header next to the branding.
 - **Logo Collapsing**: Modified the header to hide the logo brand icon (`Terminal`) and text metadata when the sidebar is collapsed, keeping the navigation panel clean and compact.
 - **Bottom Button Cleanup**: Cleaned up the redundant collapse button at the bottom of the sidebar.
+
+### Leave Dashboard & Custom Table Enhancements
+
+- **Custom Reusable Table Component (`Table.tsx`)**:
+  - Created a robust generic `<Table<T>>` component in [`Table.tsx`](frontend/src/components/Table.tsx) with custom headers casing, customizable column widths, vertical scroll viewport wrapping, and a flexible three-dot actions dropdown menu trigger.
+  - Added an optional `onRowClick?: (row: T) => void` callback trigger that maps interactive focus classes (`cursor-pointer hover:bg-slate-800/20`) to table rows.
+- **Leave Dashboard Refactoring**:
+  - Compacted the dates column output format to `MMM dd – MMM dd, yyyy` (or single dates like `MMM dd, yyyy` for single-day leaves) to eliminate row wrapping.
+  - Rendered working days count prominently with clear formatting (e.g. `X days`).
+  - Upgraded type tags to bold, capitalized tag badges (`PAID` / `UNPAID`).
+  - Added prominent status indicator emojis (🟢 Approved, 🔴 Rejected, 🟡 Pending) with heavy font weights.
+  - Hid heavy content fields like `Reason` and `Remarks` from the primary table views to keep rows compact and clean.
+  - Added a "View Details" action to row clicks and the three-dot actions dropdown menu, opening a details overlay modal that displays all leave attributes (including the full multi-line reason and remarks text fields).
+- **Push Notification Integration**:
+  - Integrated React Query leave cache invalidations directly within the global [`NotificationListener.tsx`](frontend/src/components/notification/NotificationListener.tsx) foreground handler. If a push notification payload contains leave-related metadata, it automatically invalidates my/all leaves list, balances, and calendar event queries to ensure live dashboard updates.
+- **Compact Leave Stats Cards**:
+  - Redesigned [`LeaveStatsCards.tsx`](frontend/src/components/leaves/LeaveStatsCards.tsx) to feature a smaller footprint with reduced paddings (`p-4`), smaller icons (`size={16}`), thin grey borders (`border-slate-800/80`), and explicit yearly entitlement labels.

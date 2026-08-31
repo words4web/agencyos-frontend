@@ -18,7 +18,7 @@ export function NotificationCenter() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  const { data: result } = useGetNotifications(page, 10);
+  const { data: result, isFetching } = useGetNotifications(page, 10);
   const { mutate: markAsRead } = useMarkNotificationRead();
   const { mutate: markAllAsRead } = useMarkAllNotificationsRead();
 
@@ -107,6 +107,7 @@ export function NotificationCenter() {
           handleNotificationClick={handleNotificationClick}
           loadMore={loadMore}
           hasMore={hasMore}
+          isLoading={isFetching}
         />
       )}
     </div>

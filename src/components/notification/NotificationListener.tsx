@@ -55,6 +55,19 @@ export function NotificationListener() {
         queryClient.invalidateQueries({
           queryKey: ["notifications"],
         });
+
+        const isLeaveUpdate =
+          title?.toLowerCase()?.includes("leave") ||
+          body?.toLowerCase()?.includes("leave") ||
+          data?.type === "leave";
+
+        if (isLeaveUpdate) {
+          queryClient.invalidateQueries({ queryKey: ["myLeaves"] });
+          queryClient.invalidateQueries({ queryKey: ["myBalance"] });
+          queryClient.invalidateQueries({ queryKey: ["allLeaves"] });
+          queryClient.invalidateQueries({ queryKey: ["allBalances"] });
+          queryClient.invalidateQueries({ queryKey: ["events"] });
+        }
       });
     };
 

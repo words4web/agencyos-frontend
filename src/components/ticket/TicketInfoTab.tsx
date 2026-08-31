@@ -8,6 +8,7 @@ import { TicketInfoTabProps } from "@/types/ticket/ticket.types";
 export function TicketInfoTab({
   ticket,
   employees,
+  projects = [],
   isAdmin,
   canEdit,
   formState,
@@ -38,9 +39,13 @@ export function TicketInfoTab({
         <TicketProperties
           ticket={ticket}
           employees={employees}
+          projects={projects}
           canEditAssignee={isAdmin}
+          canEditProject={isAdmin}
           localAssigneeId={formState.assigneeId}
+          localProjectId={formState.projectId}
           onUpdateAssignee={(val) => setFormValue("assigneeId", val)}
+          onUpdateProject={(val) => setFormValue("projectId", val)}
         />
         <TicketTimelineEstimation
           ticket={ticket}

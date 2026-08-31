@@ -101,6 +101,7 @@ export default function KanbanPage() {
         onDeleteTicket={handleDeleteTicket}
         onSubmitComment={handleAddComment}
         employees={employees}
+        projects={projects}
         isCommentsPending={isCommentsPending}
         isDeleting={isDeletingTicket}
         isUpdating={isUpdatingTicket}

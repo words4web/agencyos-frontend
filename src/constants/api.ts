@@ -31,4 +31,14 @@ export const API_ROUTES = {
   EVENTS: {
     BASE: "/api/events",
   },
+  LEAVES: {
+    BASE: "/api/leaves",
+    MY: "/api/leaves/my",
+    MY_BALANCE: "/api/leaves/my/balance",
+    BALANCE: "/api/leaves/balance",
+    BALANCE_USER: (userId: string) => `/api/leaves/balance/${userId}`,
+    ADMIN_CREATE: "/api/leaves/admin-create",
+    APPROVE: (leaveId: string) => `/api/leaves/${leaveId}/approve`,
+    REJECT: (leaveId: string) => `/api/leaves/${leaveId}/reject`,
+  },
 };

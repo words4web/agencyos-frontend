@@ -8,6 +8,8 @@ export function getEventClassNames(type: EEventType): string {
       return "bg-indigo-500/10 border-indigo-500/20 text-indigo-400";
     case EEventType.REMINDER:
       return "bg-emerald-500/10 border-emerald-500/20 text-emerald-400";
+    case EEventType.LEAVE:
+      return "bg-amber-500/10 border-amber-500/20 text-amber-400";
     default:
       return "bg-slate-500/10 border-slate-500/20 text-slate-400";
   }
