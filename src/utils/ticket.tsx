@@ -2,6 +2,7 @@ import {
   ITicket as Ticket,
   FormatTicketDateOptions,
 } from "@/types/ticket/ticket.types";
+import { ETicketStatus } from "@/enums";
 
 export const getPriorityBadge = (p: Ticket["priority"]) => {
   const styles = {
@@ -46,4 +47,19 @@ export const formatLocalDateTime = (date: Date) => {
   const hours = pad(date.getHours());
   const minutes = pad(date.getMinutes());
   return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
+
+export const isTicketLocked = (ticket?: Partial<Ticket> | null): boolean => {
+  if (!ticket) return false;
+  if (ticket?.isLocked) return true;
+  if (!ticket?.dueDate) return false;
+
+  const isPastDueDate = new Date() > new Date(ticket?.dueDate);
+  const isActiveStatus = [
+    ETicketStatus.BACKLOG,
+    ETicketStatus.TODO,
+    ETicketStatus.IN_PROGRESS,
+  ].includes(ticket?.status as ETicketStatus);
+
+  return isPastDueDate && isActiveStatus;
 };

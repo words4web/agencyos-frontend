@@ -80,3 +80,19 @@ export const useDeleteTicket = () => {
     },
   });
 };
+
+export const useUnlockTicket = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (variables: {
+      ticketId: string;
+      payload: { newDueDate: string; waivePenalty: boolean };
+    }) => {
+      return ticketService.unlockTicket(variables.ticketId, variables.payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tickets"] });
+    },
+  });
+};

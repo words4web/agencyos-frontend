@@ -42,10 +42,13 @@ export function TicketInfoTab({
           projects={projects}
           canEditAssignee={isAdmin}
           canEditProject={isAdmin}
+          canEditRequiresReview={isAdmin}
           localAssigneeId={formState.assigneeId}
           localProjectId={formState.projectId}
+          localRequiresReview={formState.requiresReview}
           onUpdateAssignee={(val) => setFormValue("assigneeId", val)}
           onUpdateProject={(val) => setFormValue("projectId", val)}
+          onUpdateRequiresReview={(val) => setFormValue("requiresReview", val)}
         />
         <TicketTimelineEstimation
           ticket={ticket}
@@ -69,6 +72,7 @@ export function TicketInfoTab({
         localActualHours={formState.actualHours}
         setLocalActualHours={(val) => setFormValue("actualHours", val)}
         canEdit={canEdit}
+        isAdmin={isAdmin}
       />
 
       <div className="flex flex-col gap-2">

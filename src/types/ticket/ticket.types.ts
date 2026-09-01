@@ -34,6 +34,11 @@ export interface ITicket {
   actualHours?: number;
   tags?: string[];
   startDate?: string;
+  isLocked?: boolean;
+  requiresReview?: boolean;
+  missedDeadlineCount?: number;
+  waivedDeadlineCount?: number;
+  revisionCount?: number;
   isDeleted?: boolean;
   createdAt: string;
 }
@@ -51,6 +56,7 @@ export interface CreateTicketPayload {
   actualHours?: number;
   tags?: string[];
   startDate?: string;
+  requiresReview?: boolean;
 }
 
 export interface UpdateTicketPayload {
@@ -66,10 +72,16 @@ export interface UpdateTicketPayload {
   actualHours?: number;
   tags?: string[];
   startDate?: string;
+  requiresReview?: boolean;
 }
 
 export interface UpdateTicketStatusPayload {
   status: ETicketStatus;
+}
+
+export interface UnlockTicketPayload {
+  newDueDate: string;
+  waivePenalty: boolean;
 }
 
 export interface AddCommentPayload {
@@ -111,6 +123,20 @@ export interface TicketCommentsProps {
 export interface KanbanBoardProps {
   tickets: ITicket[];
   onTicketClick: (ticket: ITicket) => void;
+}
+
+export interface UnlockTicketModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onUnlock: (newDueDate: string, waivePenalty: boolean) => void;
+  isUnlocking?: boolean;
+}
+
+export interface TicketReviewBannerProps {
+  isAdmin: boolean;
+  isUpdating: boolean;
+  onRequestRevision: () => void;
+  onApprove: () => void;
 }
 
 export interface TicketDetailModalProps {
@@ -162,6 +188,7 @@ export interface TicketLoggingProgressProps {
   localActualHours: number;
   setLocalActualHours: (hours: number) => void;
   canEdit: boolean;
+  isAdmin?: boolean;
 }
 
 export interface FormatTicketDateOptions {
@@ -176,10 +203,13 @@ export interface TicketPropertiesProps {
   projects?: IProject[];
   canEditAssignee?: boolean;
   canEditProject?: boolean;
+  canEditRequiresReview?: boolean;
   localAssigneeId?: string;
   localProjectId?: string;
+  localRequiresReview?: boolean;
   onUpdateAssignee?: (assigneeId: string) => void;
   onUpdateProject?: (projectId: string) => void;
+  onUpdateRequiresReview?: (requiresReview: boolean) => void;
 }
 
 export interface TimelineCardProps {
@@ -203,6 +233,7 @@ export interface TicketInfoTabProps {
     projectId: string;
     description: string;
     title: string;
+    requiresReview?: boolean;
     startDate: string;
     dueDate: string;
     storyPoints: string;

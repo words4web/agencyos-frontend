@@ -220,6 +220,26 @@ export function CreateTicketForm({
         error={errors?.tags?.message}
       />
 
+      <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
+        <div className="flex flex-col gap-0.5">
+          <label
+            htmlFor="requiresReviewToggle"
+            className="text-xs font-semibold text-slate-200 cursor-pointer flex items-center gap-1.5">
+            Require Admin Review Before Completion
+          </label>
+          <p className="text-[11px] text-slate-400">
+            If enabled, employee cannot mark this ticket as Completed directly.
+            Only Admins can approve it out of review.
+          </p>
+        </div>
+        <input
+          id="requiresReviewToggle"
+          type="checkbox"
+          {...register("requiresReview")}
+          className="w-4 h-4 rounded border-slate-700 bg-slate-950 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+        />
+      </div>
+
       <div className="flex gap-3 justify-end mt-4">
         <Button type="button" variant="secondary" onClick={onCancel}>
           Cancel
