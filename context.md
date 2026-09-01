@@ -253,3 +253,17 @@ const canEdit =
   - Integrated React Query leave cache invalidations directly within the global [`NotificationListener.tsx`](frontend/src/components/notification/NotificationListener.tsx) foreground handler. If a push notification payload contains leave-related metadata, it automatically invalidates my/all leaves list, balances, and calendar event queries to ensure live dashboard updates.
 - **Compact Leave Stats Cards**:
   - Redesigned [`LeaveStatsCards.tsx`](frontend/src/components/leaves/LeaveStatsCards.tsx) to feature a smaller footprint with reduced paddings (`p-4`), smaller icons (`size={16}`), thin grey borders (`border-slate-800/80`), and explicit yearly entitlement labels.
+
+### Ticket Admin Review System & Revision Counter
+
+- **Creation & Properties Toggle**:
+  - Added "Require Admin Review Before Completion" checkbox in [`CreateTicketForm.tsx`](frontend/src/forms/ticket/CreateTicketForm.tsx).
+  - Admins can toggle `requiresReview` on existing tickets inside [`TicketProperties.tsx`](frontend/src/components/ticket/TicketProperties.tsx).
+- **Kanban Board Badges ([`KanbanBoard.tsx`](frontend/src/components/ticket/KanbanBoard.tsx))**:
+  - Displays compact icon badges on ticket cards for active revisions (`🔄 X`), admin review required (`🛡️`), and deadline lock (`🔒`).
+- **Admin Review Banner Component ([`TicketReviewBanner.tsx`](frontend/src/components/ticket/TicketReviewBanner.tsx))**:
+  - Extracted standalone review control banner displayed in [`TicketDetailModal.tsx`](frontend/src/components/ticket/TicketDetailModal.tsx) when a ticket is in `IN_REVIEW`.
+  - Admin quick actions: **`🟢 Approve & Complete`** and **`🔴 Request Revision`**, both guarded by confirmation dialogs via `ConfirmModal`.
+- **Status Dropdown Guards ([`TicketLoggingProgress.tsx`](frontend/src/components/ticket/TicketLoggingProgress.tsx))**:
+  - Completely hides the status dropdown for all users when a ticket is in `IN_REVIEW` mode, requiring admins to use the dedicated review action buttons.
+  - Hides the `Completed` option from employees when `requiresReview` is enabled.

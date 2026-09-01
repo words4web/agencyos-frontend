@@ -14,6 +14,7 @@ export const createTicketSchema = z
     estimatedHours: z.number().positive().optional(),
     tags: z.string().optional(),
     startDate: z.string().optional(),
+    requiresReview: z.boolean().optional(),
   })
   .refine(
     (data) => {

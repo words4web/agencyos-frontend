@@ -1,6 +1,13 @@
 import { TicketPropertiesProps } from "@/types/ticket/ticket.types";
 import { getPriorityBadge } from "@/utils/ticket";
-import { Folder, User, Sliders, Tag } from "lucide-react";
+import {
+  Folder,
+  User,
+  Sliders,
+  Tag,
+  RotateCcw,
+  ShieldCheck,
+} from "lucide-react";
 
 export function TicketProperties({
   ticket,
@@ -8,10 +15,13 @@ export function TicketProperties({
   projects = [],
   canEditAssignee = false,
   canEditProject = false,
+  canEditRequiresReview = false,
   localAssigneeId,
   localProjectId,
+  localRequiresReview,
   onUpdateAssignee,
   onUpdateProject,
+  onUpdateRequiresReview,
 }: TicketPropertiesProps) {
   return (
     <div className="flex flex-col gap-3.5 bg-slate-950/40 p-4 border border-slate-800/80 rounded-xl min-h-[174px]">
@@ -85,6 +95,59 @@ export function TicketProperties({
           <div className="mt-1 flex items-center min-h-[28px]">
             {getPriorityBadge(ticket?.priority)}
           </div>
+        </div>
+      </div>
+
+      {(() => {
+        const revCount = ticket?.revisionCount || 0;
+        return (
+          revCount > 0 && (
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-lg bg-purple-500/10 border border-purple-500/10 text-purple-400 shrink-0">
+                <RotateCcw size={14} />
+              </div>
+              <div className="flex flex-col flex-1 min-w-0">
+                <span className="text-[10px] uppercase font-bold text-slate-500">
+                  Revisions Requested
+                </span>
+                <span className="text-xs font-bold text-purple-300 mt-0.5">
+                  {revCount} iteration{revCount > 1 ? "s" : ""}
+                </span>
+              </div>
+            </div>
+          )
+        );
+      })()}
+
+      <div className="flex items-center gap-2.5">
+        <div className="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/10 text-indigo-400 shrink-0">
+          <ShieldCheck size={14} />
+        </div>
+        <div className="flex flex-col flex-1 min-w-0">
+          <span className="text-[10px] uppercase font-bold text-slate-500">
+            Admin Review
+          </span>
+          {canEditRequiresReview ? (
+            <label className="flex items-center gap-2 mt-1 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={localRequiresReview || false}
+                onChange={(e) => onUpdateRequiresReview?.(e.target.checked)}
+                className="w-3.5 h-3.5 rounded border-slate-700 bg-slate-900 text-indigo-600 focus:ring-indigo-500"
+              />
+              <span className="text-xs font-semibold text-slate-200">
+                {localRequiresReview
+                  ? "Required before completion"
+                  : "Direct completion allowed"}
+              </span>
+            </label>
+          ) : (
+            <span className="text-xs font-semibold text-indigo-300 mt-0.5">
+              {ticket?.requiresReview
+                ? "Required before completion"
+                : "Direct completion allowed"}
+            </span>
+          )}
         </div>
       </div>
 

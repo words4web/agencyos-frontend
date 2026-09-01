@@ -42,4 +42,13 @@ export const ticketService = {
   ): Promise<AxiosResponse<{ success: boolean; data: ITicket }>> => {
     return axiosInstance.delete(API_ROUTES.TICKETS.DETAIL(ticketId));
   },
+
+  unlockTicket: async (
+    ticketId: string,
+    payload: { newDueDate: string; waivePenalty: boolean },
+  ): Promise<
+    AxiosResponse<{ success: boolean; message?: string; data: ITicket }>
+  > => {
+    return axiosInstance.patch(API_ROUTES.TICKETS.UNLOCK(ticketId), payload);
+  },
 };

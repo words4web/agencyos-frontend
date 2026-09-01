@@ -8,14 +8,19 @@ export function TicketLoggingProgress({
   localActualHours,
   setLocalActualHours,
   canEdit,
+  isAdmin = false,
 }: TicketLoggingProgressProps) {
+  const isLockedInReview = Boolean(
+    ticket?.requiresReview && ticket?.status === ETicketStatus.IN_REVIEW,
+  );
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-950/20 p-4 border border-slate-800/80 rounded-xl">
       <div className="flex flex-col gap-1">
         <span className="text-[10px] uppercase font-bold text-slate-500 block mb-1">
           Status
         </span>
-        {canEdit ? (
+        {canEdit && !isLockedInReview ? (
           <select
             value={localStatus}
             onChange={(e) => setLocalStatus(e.target.value as ETicketStatus)}
@@ -24,7 +29,9 @@ export function TicketLoggingProgress({
             <option value={ETicketStatus.TODO}>Todo</option>
             <option value={ETicketStatus.IN_PROGRESS}>In Progress</option>
             <option value={ETicketStatus.IN_REVIEW}>In Review</option>
-            <option value={ETicketStatus.COMPLETED}>Completed</option>
+            {(!ticket?.requiresReview || isAdmin) && (
+              <option value={ETicketStatus.COMPLETED}>Completed</option>
+            )}
           </select>
         ) : (
           <span className="text-xs font-semibold text-slate-300 capitalize">
