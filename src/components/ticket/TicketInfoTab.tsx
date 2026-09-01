@@ -1,9 +1,14 @@
 import { TicketProperties } from "./TicketProperties";
 import { TicketTimelineEstimation } from "./TicketTimelineEstimation";
 import { TicketLoggingProgress } from "./TicketLoggingProgress";
+import { TicketChecklist } from "./TicketChecklist";
 import { FileText } from "lucide-react";
 import { formatTicketDate } from "@/utils/ticket";
-import { TicketInfoTabProps } from "@/types/ticket/ticket.types";
+import {
+  TicketInfoTabProps,
+  IChecklistItem,
+} from "@/types/ticket/ticket.types";
+import { useGetWorkTypes } from "@/services/workType/workType.hooks";
 
 export function TicketInfoTab({
   ticket,
@@ -14,6 +19,18 @@ export function TicketInfoTab({
   formState,
   setFormValue,
 }: TicketInfoTabProps) {
+  const { data: rawWorkTypes = [] } = useGetWorkTypes();
+  const workTypes = Array.isArray(rawWorkTypes) ? rawWorkTypes : [];
+  const activeChecklist = formState.checklist || ticket?.checklist || [];
+
+  const handleToggleChecklistItem = (index: number, isCompleted: boolean) => {
+    const updatedChecklist = activeChecklist?.map(
+      (item: IChecklistItem, i: number) =>
+        i === index ? { ...item, isCompleted } : item,
+    );
+    setFormValue("checklist", updatedChecklist);
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
@@ -40,14 +57,35 @@ export function TicketInfoTab({
           ticket={ticket}
           employees={employees}
           projects={projects}
+          workTypes={workTypes}
           canEditAssignee={isAdmin}
           canEditProject={isAdmin}
+          canEditPriority={isAdmin}
+          canEditWorkType={isAdmin}
           canEditRequiresReview={isAdmin}
           localAssigneeId={formState.assigneeId}
           localProjectId={formState.projectId}
+          localPriority={formState.priority}
+          localWorkTypeId={formState.workTypeId}
           localRequiresReview={formState.requiresReview}
           onUpdateAssignee={(val) => setFormValue("assigneeId", val)}
           onUpdateProject={(val) => setFormValue("projectId", val)}
+          onUpdatePriority={(val) => setFormValue("priority", val)}
+          onUpdateWorkType={(val) => {
+            const selectedWorkType = workTypes?.find((wt) => wt._id === val);
+            setFormValue("workTypeId", val);
+            if (selectedWorkType?.items) {
+              setFormValue(
+                "checklist",
+                selectedWorkType.items.map((item) => ({
+                  label: item.label,
+                  isCompleted: false,
+                })),
+              );
+            } else if (!val) {
+              setFormValue("checklist", []);
+            }
+          }}
           onUpdateRequiresReview={(val) => setFormValue("requiresReview", val)}
         />
         <TicketTimelineEstimation
@@ -93,6 +131,14 @@ export function TicketInfoTab({
           </p>
         )}
       </div>
+
+      {activeChecklist?.length > 0 && (
+        <TicketChecklist
+          checklist={activeChecklist}
+          onToggleItem={handleToggleChecklistItem}
+          isReadOnly={!canEdit && !isAdmin}
+        />
+      )}
     </div>
   );
 }

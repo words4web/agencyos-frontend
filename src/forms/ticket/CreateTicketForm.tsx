@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm, useWatch, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   createTicketSchema,
@@ -11,6 +11,7 @@ import { ShieldAlert, Info } from "lucide-react";
 import { ETicketStatus, ETicketPriority } from "@/enums";
 import { CreateTicketFormProps } from "@/types/ticket/ticket.types";
 import { formatLocalDateTime } from "@/utils/ticket";
+import { useGetWorkTypes } from "@/services/workType/workType.hooks";
 
 export function CreateTicketForm({
   projects,
@@ -20,6 +21,9 @@ export function CreateTicketForm({
   serverError,
   isPending,
 }: CreateTicketFormProps) {
+  const { data: rawWorkTypes = [] } = useGetWorkTypes();
+  const workTypes = Array.isArray(rawWorkTypes) ? rawWorkTypes : [];
+
   const [initialDates] = useState(() => {
     const now = new Date();
     const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
@@ -41,6 +45,7 @@ export function CreateTicketForm({
       description: "",
       project: "",
       assignee: "",
+      workType: "",
       status: ETicketStatus.TODO,
       priority: ETicketPriority.MEDIUM,
       dueDate: initialDates.dueDate,
@@ -57,8 +62,39 @@ export function CreateTicketForm({
     defaultValue: initialDates.startDate,
   });
 
+  const selectedWorkTypeId = useWatch({
+    control,
+    name: "workType",
+  });
+
+  const activeWorkTypeObj = workTypes?.find(
+    (wt) => wt?._id === selectedWorkTypeId,
+  );
+
+  const handleFormSubmit: SubmitHandler<CreateTicketFormValues> = (data) => {
+    let checklist;
+    if (data?.workType) {
+      const selectedWorkType = workTypes?.find(
+        (wt) => wt?._id === data?.workType,
+      );
+      if (selectedWorkType?.items) {
+        checklist = selectedWorkType?.items?.map((item) => ({
+          label: item?.label,
+          isCompleted: false,
+        }));
+      }
+    }
+
+    onSubmit({
+      ...data,
+      checklist,
+    });
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+    <form
+      onSubmit={handleSubmit(handleFormSubmit)}
+      className="flex flex-col gap-4">
       {serverError && (
         <div className="p-3 bg-red-950/20 border border-red-800/40 rounded-lg text-xs text-red-400 flex items-center gap-2">
           <ShieldAlert size={16} />
@@ -115,22 +151,22 @@ export function CreateTicketForm({
           <select
             {...register("assignee")}
             className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 text-sm focus:outline-none focus:border-indigo-500">
-            <option value="">Select Assignee</option>
-            {employees?.map((emp) => (
-              <option key={emp?._id} value={emp?._id}>
-                {emp?.name} ({emp?.designation})
+            <option value="">Select Employee</option>
+            {employees?.map((e) => (
+              <option key={e?._id} value={e?._id}>
+                {e?.name} ({e?.designation})
               </option>
             ))}
           </select>
-          {errors?.assignee && (
+          {errors.assignee && (
             <span className="text-xs text-red-400">
-              {errors?.assignee?.message}
+              {errors.assignee.message}
             </span>
           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
         <div className="flex flex-col gap-1">
           <label className="text-sm font-semibold text-slate-300">
             Priority
@@ -219,6 +255,42 @@ export function CreateTicketForm({
         {...register("tags")}
         error={errors?.tags?.message}
       />
+
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-semibold text-slate-300">
+          Work Type (Deliverable Checklist Template)
+        </label>
+        <select
+          {...register("workType")}
+          className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 text-sm focus:outline-none focus:border-indigo-500 font-medium">
+          <option value="">None (Standard Ticket)</option>
+          {workTypes?.map((wt) => (
+            <option key={wt?._id} value={wt?._id}>
+              {wt?.name} ({wt?.items?.length || 0} deliverable items)
+            </option>
+          ))}
+        </select>
+
+        {activeWorkTypeObj &&
+          activeWorkTypeObj?.items &&
+          activeWorkTypeObj?.items?.length > 0 && (
+            <div className="mt-1 p-3 bg-purple-950/20 border border-purple-900/40 rounded-xl flex flex-col gap-2">
+              <span className="text-[11px] font-bold uppercase text-purple-400 flex items-center gap-1.5">
+                <Info size={13} /> Default Checklist Items for &quot;
+                {activeWorkTypeObj?.name}&quot;
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {activeWorkTypeObj?.items?.map((item, idx) => (
+                  <span
+                    key={idx}
+                    className="text-xs bg-purple-950/60 border border-purple-800/60 text-purple-200 px-2.5 py-1 rounded-lg">
+                    ✓ {item?.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+      </div>
 
       <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
         <div className="flex flex-col gap-0.5">

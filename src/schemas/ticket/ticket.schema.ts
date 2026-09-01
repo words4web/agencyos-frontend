@@ -15,6 +15,15 @@ export const createTicketSchema = z
     tags: z.string().optional(),
     startDate: z.string().optional(),
     requiresReview: z.boolean().optional(),
+    workType: z.string().optional(),
+    checklist: z
+      .array(
+        z.object({
+          label: z.string(),
+          isCompleted: z.boolean(),
+        }),
+      )
+      .optional(),
   })
   .refine(
     (data) => {
