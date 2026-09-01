@@ -29,8 +29,8 @@ export function Table<T>({
   }, []);
 
   return (
-    <div className="w-full rounded-md border border-slate-800/80 bg-slate-900/10 overflow-hidden shadow-xl backdrop-blur-md">
-      <div className="overflow-x-auto">
+    <div className="w-full rounded-md border border-slate-800/80 bg-slate-900/10 shadow-xl backdrop-blur-md">
+      <div className="overflow-x-visible">
         <table className="w-full border-collapse text-left text-sm text-white">
           <thead className="bg-slate-950/40 text-[9px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-850">
             <tr>
@@ -100,7 +100,7 @@ export function Table<T>({
                         {activeRowId === rowKey && (
                           <div
                             ref={dropdownRef}
-                            className="absolute right-6 mt-1.5 w-44 rounded-xl border border-slate-800 bg-slate-950 p-1 shadow-2xl z-30 animate-in fade-in slide-in-from-top-1 duration-200">
+                            className="absolute right-6 mt-1.5 w-44 rounded-xl border border-slate-800 bg-slate-950 p-1 shadow-2xl z-50 animate-in fade-in slide-in-from-top-1 duration-200">
                             {actions?.map((act, actIdx) => (
                               <button
                                 key={actIdx}
