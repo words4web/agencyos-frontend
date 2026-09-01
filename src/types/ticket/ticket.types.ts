@@ -6,6 +6,13 @@ import {
   CreateTicketFormValues,
   AddCommentFormValues,
 } from "@/schemas/ticket/ticket.schema";
+import { IWorkType } from "../workType/workType.types";
+
+export interface IChecklistItem {
+  _id?: string;
+  label: string;
+  isCompleted: boolean;
+}
 
 export interface IComment {
   _id?: string;
@@ -25,6 +32,8 @@ export interface ITicket {
   description: string;
   project: IProject;
   assignee: IEmployee;
+  workType?: IWorkType;
+  checklist?: IChecklistItem[];
   status: ETicketStatus;
   priority: ETicketPriority;
   comments: IComment[];
@@ -48,6 +57,8 @@ export interface CreateTicketPayload {
   description?: string;
   project: string;
   assignee: string;
+  workType?: string;
+  checklist?: IChecklistItem[];
   status: ETicketStatus;
   priority: ETicketPriority;
   dueDate?: string;
@@ -64,6 +75,8 @@ export interface UpdateTicketPayload {
   description?: string;
   project?: string;
   assignee?: string;
+  workType?: string;
+  checklist?: IChecklistItem[];
   status?: ETicketStatus;
   priority?: ETicketPriority;
   dueDate?: string;
@@ -201,14 +214,21 @@ export interface TicketPropertiesProps {
   ticket: ITicket;
   employees?: IEmployee[];
   projects?: IProject[];
+  workTypes?: IWorkType[];
   canEditAssignee?: boolean;
   canEditProject?: boolean;
+  canEditPriority?: boolean;
+  canEditWorkType?: boolean;
   canEditRequiresReview?: boolean;
   localAssigneeId?: string;
   localProjectId?: string;
+  localPriority?: ETicketPriority;
+  localWorkTypeId?: string;
   localRequiresReview?: boolean;
   onUpdateAssignee?: (assigneeId: string) => void;
   onUpdateProject?: (projectId: string) => void;
+  onUpdatePriority?: (priority: ETicketPriority) => void;
+  onUpdateWorkType?: (workTypeId: string) => void;
   onUpdateRequiresReview?: (requiresReview: boolean) => void;
 }
 
@@ -231,6 +251,9 @@ export interface TicketInfoTabProps {
     actualHours: number;
     assigneeId: string;
     projectId: string;
+    priority?: ETicketPriority;
+    workTypeId?: string;
+    checklist?: IChecklistItem[];
     description: string;
     title: string;
     requiresReview?: boolean;

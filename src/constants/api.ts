@@ -42,4 +42,8 @@ export const API_ROUTES = {
     APPROVE: (leaveId: string) => `/api/leaves/${leaveId}/approve`,
     REJECT: (leaveId: string) => `/api/leaves/${leaveId}/reject`,
   },
+  WORK_TYPES: {
+    BASE: "/api/work-types",
+    DETAIL: (id: string) => `/api/work-types/${id}`,
+  },
 };

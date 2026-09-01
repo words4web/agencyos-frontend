@@ -267,3 +267,22 @@ const canEdit =
 - **Status Dropdown Guards ([`TicketLoggingProgress.tsx`](frontend/src/components/ticket/TicketLoggingProgress.tsx))**:
   - Completely hides the status dropdown for all users when a ticket is in `IN_REVIEW` mode, requiring admins to use the dedicated review action buttons.
   - Hides the `Completed` option from employees when `requiresReview` is enabled.
+
+### Dynamic Work Type Checklists & Ticket Deliverable Integration
+
+- **Admin Work Type Management Page (`/admin/work-types`)**:
+  - Created [`page.tsx`](frontend/src/app/admin/work-types/page.tsx) and [`WorkTypeManagementModal.tsx`](frontend/src/components/workType/WorkTypeManagementModal.tsx) for Admins to create, edit, and soft-deactivate Work Types along with default deliverable items (enforces at least 1 item using shared [`Input.tsx`](frontend/src/components/Input.tsx)).
+  - Mounted "Work Types" link with `CheckSquare` icon in [`Sidebar.tsx`](frontend/src/components/Sidebar.tsx) and [`constants/route.ts`](frontend/src/constants/route.ts).
+- **Work Type Service & Hooks (`services/workType/`)**:
+  - Created [`workType.service.ts`](frontend/src/services/workType/workType.service.ts) and [`workType.hooks.ts`](frontend/src/services/workType/workType.hooks.ts) consuming `API_ROUTES.WORK_TYPES`.
+- **Ticket Creation Form Integration ([`CreateTicketForm.tsx`](frontend/src/forms/ticket/CreateTicketForm.tsx))**:
+  - Added Work Type selector dropdown (positioned right above the Admin Review toggle) with live preview box showing default checklist items.
+  - Auto-populates the ticket's `checklist` array upon submit.
+- **Deliverable Checklist UI ([`TicketChecklist.tsx`](frontend/src/components/ticket/TicketChecklist.tsx))**:
+  - Rendered interactive progress bar and deliverable checklist items in [`TicketInfoTab.tsx`](frontend/src/components/ticket/TicketInfoTab.tsx) directly below ticket Description.
+  - Displays green "Ready for Review" badge when 100% completed.
+- **Ticket Properties & Priority Editing ([`TicketProperties.tsx`](frontend/src/components/ticket/TicketProperties.tsx))**:
+  - Displays Work Type badge directly above Admin Review section. Admins can edit/swap Work Type on existing tickets, updating the checklist in real time.
+  - Made Ticket Priority (`Low`, `Medium`, `High`) editable for Admins directly within Ticket Properties.
+- **Frontend Submission Guard & Smooth Scroll ([`TicketDetailModal.tsx`](frontend/src/components/ticket/TicketDetailModal.tsx))**:
+  - If a user attempts to move a ticket to `IN_REVIEW` with uncompleted checklist items, the modal smoothly scrolls to `#deliverableChecklistSection` and displays a toast error message.

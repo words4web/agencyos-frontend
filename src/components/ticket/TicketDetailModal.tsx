@@ -4,7 +4,7 @@ import { Modal } from "@/components/Modal";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { UnlockTicketModal } from "./UnlockTicketModal";
 import { TicketDetailModalProps } from "@/types/ticket/ticket.types";
-import { ETicketStatus, EUserRole } from "@/enums";
+import { ETicketStatus, ETicketPriority, EUserRole } from "@/enums";
 import { formatLocalDateTime, isTicketLocked } from "@/utils/ticket";
 import { RootState } from "@/store";
 import { TicketInfoTab } from "./TicketInfoTab";
@@ -40,9 +40,12 @@ export function TicketDetailModal({
 
   const [formState, setFormState] = useState({
     status: ticket?.status || ETicketStatus.TODO,
+    priority: ticket?.priority || ETicketPriority.MEDIUM,
     actualHours: ticket?.actualHours || 0,
     assigneeId: ticket?.assignee?._id || "",
     projectId: ticket?.project?._id || "",
+    workTypeId: ticket?.workType?._id || "",
+    checklist: ticket?.checklist || [],
     description: ticket?.description || "",
     title: ticket?.title || "",
     requiresReview: ticket?.requiresReview || false,
@@ -109,8 +112,12 @@ export function TicketDetailModal({
     (formState.status !== ticket?.status ||
       formState.actualHours !== (ticket?.actualHours || 0) ||
       formState.assigneeId !== (ticket?.assignee?._id || "") ||
+      JSON.stringify(formState.checklist) !==
+        JSON.stringify(ticket?.checklist || []) ||
       (isAdmin &&
         (formState.projectId !== (ticket?.project?._id || "") ||
+          formState.priority !== ticket?.priority ||
+          formState.workTypeId !== (ticket?.workType?._id || "") ||
           formState.description !== (ticket?.description || "") ||
           formState.title !== (ticket?.title || "") ||
           formState.requiresReview !== (ticket?.requiresReview || false) ||
@@ -122,9 +129,34 @@ export function TicketDetailModal({
 
   const handleSave = () => {
     if (!ticket) return;
+
+    if (formState.status === ETicketStatus.IN_REVIEW) {
+      const activeChecklist = formState?.checklist || ticket?.checklist || [];
+      const incompleteItems = activeChecklist?.filter(
+        (item: any) => !item?.isCompleted,
+      );
+      if (incompleteItems?.length > 0) {
+        const checklistElement = document.getElementById(
+          "deliverableChecklistSection",
+        );
+        if (checklistElement) {
+          checklistElement.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        }
+
+        toast.error(
+          `Cannot submit for review: ${incompleteItems?.length} deliverable item(s) are incomplete. Please check all boxes first.`,
+        );
+        return;
+      }
+    }
+
     const updates: any = {
       status: formState.status,
       actualHours: formState.actualHours,
+      checklist: formState.checklist,
     };
 
     if (isAdmin) {
@@ -135,6 +167,12 @@ export function TicketDetailModal({
       }
       if (formState.projectId) {
         updates.project = formState.projectId;
+      }
+      if (formState.priority) {
+        updates.priority = formState.priority;
+      }
+      if (formState.workTypeId) {
+        updates.workType = formState.workTypeId;
       }
       updates.title = formState.title;
       updates.description = formState.description;

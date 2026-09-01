@@ -13,6 +13,7 @@ import {
   User,
   Calendar,
   CalendarClock,
+  CheckSquare,
 } from "lucide-react";
 import { EUserRole } from "@/enums";
 import { ROUTES } from "@/constants/route";
@@ -56,6 +57,12 @@ export const Sidebar: React.FC = () => {
       name: "Employees",
       path: ROUTES.ADMIN_EMPLOYEES,
       icon: Users,
+      visible: isAdmin,
+    },
+    {
+      name: "Work Types",
+      path: ROUTES.ADMIN_WORK_TYPES,
+      icon: CheckSquare,
       visible: isAdmin,
     },
     {

@@ -1,5 +1,6 @@
 import { TicketPropertiesProps } from "@/types/ticket/ticket.types";
 import { getPriorityBadge } from "@/utils/ticket";
+import { ETicketPriority } from "@/enums";
 import {
   Folder,
   User,
@@ -7,20 +8,28 @@ import {
   Tag,
   RotateCcw,
   ShieldCheck,
+  CheckSquare,
 } from "lucide-react";
 
 export function TicketProperties({
   ticket,
   employees = [],
   projects = [],
+  workTypes = [],
   canEditAssignee = false,
   canEditProject = false,
+  canEditPriority = false,
+  canEditWorkType = false,
   canEditRequiresReview = false,
   localAssigneeId,
   localProjectId,
+  localPriority,
+  localWorkTypeId,
   localRequiresReview,
   onUpdateAssignee,
   onUpdateProject,
+  onUpdatePriority,
+  onUpdateWorkType,
   onUpdateRequiresReview,
 }: TicketPropertiesProps) {
   return (
@@ -92,9 +101,24 @@ export function TicketProperties({
           <span className="text-[10px] uppercase font-bold text-slate-500">
             Priority
           </span>
-          <div className="mt-1 flex items-center min-h-[28px]">
-            {getPriorityBadge(ticket?.priority)}
-          </div>
+          {canEditPriority ? (
+            <select
+              value={
+                localPriority || ticket?.priority || ETicketPriority.MEDIUM
+              }
+              onChange={(e) =>
+                onUpdatePriority?.(e.target.value as ETicketPriority)
+              }
+              className="text-xs font-semibold text-slate-200 bg-slate-900 border border-slate-800/80 rounded px-2 py-1 focus:outline-none focus:border-indigo-500 w-full mt-1 min-h-[28px]">
+              <option value={ETicketPriority.LOW}>Low</option>
+              <option value={ETicketPriority.MEDIUM}>Medium</option>
+              <option value={ETicketPriority.HIGH}>High</option>
+            </select>
+          ) : (
+            <div className="mt-1 flex items-center min-h-[28px]">
+              {getPriorityBadge(ticket?.priority)}
+            </div>
+          )}
         </div>
       </div>
 
@@ -118,6 +142,34 @@ export function TicketProperties({
           )
         );
       })()}
+
+      <div className="flex items-center gap-2.5">
+        <div className="p-2 rounded-lg bg-purple-500/10 border border-purple-500/10 text-purple-400 shrink-0">
+          <CheckSquare size={14} />
+        </div>
+        <div className="flex flex-col min-w-0 flex-1">
+          <span className="text-[10px] uppercase font-bold text-slate-500">
+            Work Type
+          </span>
+          {canEditWorkType ? (
+            <select
+              value={localWorkTypeId || ""}
+              onChange={(e) => onUpdateWorkType?.(e.target.value)}
+              className="text-xs font-semibold text-purple-300 bg-slate-900 border border-slate-800/80 rounded px-2 py-1 focus:outline-none focus:border-indigo-500 w-full mt-1 min-h-[28px]">
+              <option value="">None (Standard Ticket)</option>
+              {workTypes?.map((wt) => (
+                <option key={wt?._id} value={wt?._id}>
+                  {wt?.name}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <span className="text-xs font-semibold text-purple-300 truncate mt-0.5">
+              {ticket?.workType?.name || "None (Standard)"}
+            </span>
+          )}
+        </div>
+      </div>
 
       <div className="flex items-center gap-2.5">
         <div className="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/10 text-indigo-400 shrink-0">
