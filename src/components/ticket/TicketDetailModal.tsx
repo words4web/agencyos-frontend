@@ -5,7 +5,11 @@ import { ConfirmModal } from "@/components/ConfirmModal";
 import { UnlockTicketModal } from "./UnlockTicketModal";
 import { TicketDetailModalProps } from "@/types/ticket/ticket.types";
 import { ETicketStatus, ETicketPriority, EUserRole } from "@/enums";
-import { formatLocalDateTime, isTicketLocked } from "@/utils/ticket";
+import {
+  formatLocalDateTime,
+  parseLocalDateTimeToISO,
+  isTicketLocked,
+} from "@/utils/ticket";
 import { RootState } from "@/store";
 import { TicketInfoTab } from "./TicketInfoTab";
 import { TicketCommentsTab } from "./TicketCommentsTab";
@@ -185,8 +189,8 @@ export function TicketDetailModal({
       updates.title = formState.title;
       updates.description = formState.description;
       updates.requiresReview = formState.requiresReview;
-      updates.startDate = formState.startDate || null;
-      updates.dueDate = formState.dueDate || null;
+      updates.startDate = parseLocalDateTimeToISO(formState.startDate) || null;
+      updates.dueDate = parseLocalDateTimeToISO(formState.dueDate) || null;
       updates.storyPoints =
         formState.storyPoints !== "" ? Number(formState.storyPoints) : null;
       updates.estimatedHours =
@@ -249,6 +253,7 @@ export function TicketDetailModal({
         isOpen={isOpen}
         onClose={handleClose}
         size="max-w-2xl"
+        closeOnBackdropClick={false}
         title={formState.title || (ticket ? ticket?.title : "")}
         headerActions={headerActions}>
         {ticket && (

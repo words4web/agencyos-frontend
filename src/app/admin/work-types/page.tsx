@@ -117,7 +117,7 @@ export default function WorkTypesPage() {
               </div>
 
               {wt?.description && (
-                <p className="text-xs text-slate-400 leading-relaxed">
+                <p className="text-xs text-slate-400 leading-relaxed break-words whitespace-pre-wrap max-h-32 overflow-y-auto pr-1">
                   {wt?.description}
                 </p>
               )}
@@ -126,13 +126,15 @@ export default function WorkTypesPage() {
                 <span className="text-[10px] uppercase font-bold text-slate-500">
                   Default Items
                 </span>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto pr-1">
                   {wt?.items && wt?.items?.length > 0 ? (
                     wt?.items?.map((item, i) => (
                       <span
                         key={i}
-                        className="text-[10px] font-semibold bg-slate-900 text-slate-300 border border-slate-800 px-2 py-0.5 rounded-md flex items-center gap-1">
-                        <span>{item.label}</span>
+                        className="text-[10px] font-semibold bg-slate-900 text-slate-300 border border-slate-800 px-2 py-0.5 rounded-md flex items-center gap-1 break-words max-w-full">
+                        <span className="break-words max-w-full">
+                          {item.label}
+                        </span>
                       </span>
                     ))
                   ) : (
@@ -150,6 +152,7 @@ export default function WorkTypesPage() {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        closeOnBackdropClick={false}
         title={selectedWorkType ? "Edit Work Type" : "Create New Work Type"}>
         <WorkTypeManagementModal
           workType={selectedWorkType}

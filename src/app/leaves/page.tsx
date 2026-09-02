@@ -152,7 +152,8 @@ export default function LeavesPage() {
       <Modal
         isOpen={isAdminCreateModalOpen}
         onClose={() => setIsAdminCreateModalOpen(false)}
-        title="Record Staff Leave">
+        title="Record Staff Leave"
+        closeOnBackdropClick={false}>
         <LeaveForm
           isAdmin={true}
           employees={employees}

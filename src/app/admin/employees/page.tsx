@@ -31,7 +31,8 @@ export default function EmployeesPage() {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Add New Employee">
+        title="Add New Employee"
+        closeOnBackdropClick={false}>
         <CreateEmployeeForm
           onSuccess={() => setIsModalOpen(false)}
           onCancel={() => setIsModalOpen(false)}

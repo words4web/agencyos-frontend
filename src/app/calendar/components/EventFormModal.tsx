@@ -13,7 +13,11 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
   employees,
 }) => {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={title}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={title}
+      closeOnBackdropClick={false}>
       <EventForm
         defaultValues={defaultValues}
         onSubmit={onSubmit}

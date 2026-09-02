@@ -61,7 +61,11 @@ export function CreateProjectModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Create New Project">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      closeOnBackdropClick={false}
+      title="Create New Project">
       {formError && (
         <div className="mb-4 p-3 bg-red-950/20 border border-red-800/40 rounded-lg text-xs text-red-400 flex items-center gap-2">
           <ShieldAlert size={16} />

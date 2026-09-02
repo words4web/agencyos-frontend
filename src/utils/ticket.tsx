@@ -49,6 +49,13 @@ export const formatLocalDateTime = (date: Date) => {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
+export const parseLocalDateTimeToISO = (localDateTimeStr?: string | null) => {
+  if (!localDateTimeStr) return undefined;
+  const date = new Date(localDateTimeStr);
+  if (isNaN(date.getTime())) return undefined;
+  return date.toISOString();
+};
+
 export const isTicketLocked = (ticket?: Partial<Ticket> | null): boolean => {
   if (!ticket) return false;
   if (ticket?.isLocked) return true;
