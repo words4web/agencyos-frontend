@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { IEmployee } from "../employee/employee.types";
-import { IProject } from "../project/project.types";
+import { IProject, IProjectAsset } from "../project/project.types";
 import { ETicketStatus, ETicketPriority } from "@/enums";
 import {
   CreateTicketFormValues,
@@ -34,6 +34,7 @@ export interface ITicket {
   assignee: IEmployee;
   workType?: IWorkType;
   checklist?: IChecklistItem[];
+  assets?: (string | IProjectAsset)[];
   status: ETicketStatus;
   priority: ETicketPriority;
   comments: IComment[];
@@ -59,6 +60,7 @@ export interface CreateTicketPayload {
   assignee: string;
   workType?: string;
   checklist?: IChecklistItem[];
+  assets?: string[];
   status: ETicketStatus;
   priority: ETicketPriority;
   dueDate?: string;
@@ -77,6 +79,7 @@ export interface UpdateTicketPayload {
   assignee?: string;
   workType?: string;
   checklist?: IChecklistItem[];
+  assets?: string[];
   status?: ETicketStatus;
   priority?: ETicketPriority;
   dueDate?: string;
@@ -269,4 +272,20 @@ export interface TicketCommentsTabProps {
   ticket: ITicket;
   onSubmitComment: (values: AddCommentFormValues) => void;
   isCommentsPending?: boolean;
+}
+
+export interface ProjectAssetPickerModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  projectAssets: IProjectAsset[];
+  googleDriveFolderId?: string;
+  selectedAssetIds: string[];
+  onSelectAssets: (assetIds: string[]) => void;
+}
+
+export interface TicketAssetsTabProps {
+  ticket: ITicket;
+  canEdit: boolean;
+  localAssetIds: string[];
+  setLocalAssetIds: (assetIds: string[]) => void;
 }
