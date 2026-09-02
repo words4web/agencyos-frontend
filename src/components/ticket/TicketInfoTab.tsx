@@ -135,6 +135,14 @@ export function TicketInfoTab({
       {activeChecklist?.length > 0 && (
         <TicketChecklist
           checklist={activeChecklist}
+          description={
+            workTypes?.find(
+              (wt) =>
+                wt._id === formState.workTypeId ||
+                wt._id === ticket?.workType?._id ||
+                wt._id === (ticket?.workType as any),
+            )?.description || ticket?.workType?.description
+          }
           onToggleItem={handleToggleChecklistItem}
           isReadOnly={!canEdit && !isAdmin}
         />

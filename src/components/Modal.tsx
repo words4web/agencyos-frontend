@@ -9,6 +9,7 @@ interface ModalProps {
   children: React.ReactNode;
   size?: string;
   headerActions?: React.ReactNode;
+  closeOnBackdropClick?: boolean;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -18,6 +19,7 @@ export const Modal: React.FC<ModalProps> = ({
   children,
   size = "max-w-lg",
   headerActions,
+  closeOnBackdropClick = true,
 }) => {
   const [mounted, setMounted] = useState(false);
 
@@ -34,7 +36,7 @@ export const Modal: React.FC<ModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
         className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity"
-        onClick={onClose}
+        onClick={closeOnBackdropClick ? onClose : undefined}
       />
 
       <div

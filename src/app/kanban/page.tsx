@@ -81,6 +81,7 @@ export default function KanbanPage() {
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
         size="max-w-2xl"
+        closeOnBackdropClick={false}
         title="Create New Ticket">
         <CreateTicketForm
           projects={projects}

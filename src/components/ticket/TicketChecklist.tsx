@@ -3,10 +3,12 @@ import type { IChecklistItem } from "@/types/ticket/ticket.types";
 
 export const TicketChecklist = ({
   checklist,
+  description,
   onToggleItem,
   isReadOnly = false,
 }: {
   checklist: IChecklistItem[];
+  description?: string;
   onToggleItem?: (index: number, isCompleted: boolean) => void;
   isReadOnly?: boolean;
 }) => {
@@ -34,6 +36,12 @@ export const TicketChecklist = ({
           </span>
         )}
       </div>
+
+      {description && (
+        <p className="text-xs text-slate-400 leading-relaxed bg-slate-900/40 p-2.5 rounded-xl border border-slate-850 break-words whitespace-pre-wrap max-h-32 overflow-y-auto">
+          {description}
+        </p>
+      )}
 
       <div className="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden border border-slate-800">
         <div
@@ -71,7 +79,7 @@ export const TicketChecklist = ({
                 )}
               </div>
               <span
-                className={`flex-1 font-medium leading-snug ${
+                className={`flex-1 min-w-0 font-medium leading-snug break-words whitespace-pre-wrap ${
                   isChecked ? "line-through text-emerald-400/80" : ""
                 }`}>
                 {item?.label}

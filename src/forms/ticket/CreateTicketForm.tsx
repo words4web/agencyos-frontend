@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { ETicketStatus, ETicketPriority } from "@/enums";
 import { CreateTicketFormProps } from "@/types/ticket/ticket.types";
-import { formatLocalDateTime } from "@/utils/ticket";
+import { formatLocalDateTime, parseLocalDateTimeToISO } from "@/utils/ticket";
 import { useGetWorkTypes } from "@/services/workType/workType.hooks";
 import { ProjectAssetPickerModal } from "@/components/ticket/ProjectAssetPickerModal";
 import { IProjectAsset } from "@/types/project/project.types";
@@ -113,6 +113,8 @@ export function CreateTicketForm({
 
     onSubmit({
       ...data,
+      startDate: parseLocalDateTimeToISO(data?.startDate),
+      dueDate: parseLocalDateTimeToISO(data?.dueDate),
       workType: data?.workType || undefined,
       checklist,
       assets: selectedAssetIds,
@@ -307,11 +309,16 @@ export function CreateTicketForm({
                 <Info size={13} /> Default Checklist Items for &quot;
                 {activeWorkTypeObj?.name}&quot;
               </span>
-              <div className="flex flex-wrap gap-1.5">
+              {activeWorkTypeObj?.description && (
+                <p className="text-xs text-purple-200/80 leading-relaxed break-words whitespace-pre-wrap max-h-24 overflow-y-auto">
+                  {activeWorkTypeObj?.description}
+                </p>
+              )}
+              <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto pr-1">
                 {activeWorkTypeObj?.items?.map((item, idx) => (
                   <span
                     key={idx}
-                    className="text-xs bg-purple-950/60 border border-purple-800/60 text-purple-200 px-2.5 py-1 rounded-lg">
+                    className="text-xs bg-purple-950/60 border border-purple-800/60 text-purple-200 px-2.5 py-1 rounded-lg break-words max-w-full">
                     ✓ {item?.label}
                   </span>
                 ))}

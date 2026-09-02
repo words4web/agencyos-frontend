@@ -161,15 +161,21 @@ export function useCalendar() {
   };
 
   const handleAddSubmit = (values: EventFormValues) => {
+    const parseLocalToIso = (dateStr: string, timeStr: string) => {
+      const [year, month, day] = dateStr?.split("-")?.map(Number);
+      const [hours, minutes] = timeStr?.split(":")?.map(Number);
+      return new Date(year, month - 1, day, hours, minutes)?.toISOString();
+    };
+
     const startIso =
-      values.type === EEventType.HOLIDAY
-        ? new Date(`${values.date}T00:00:00`).toISOString()
-        : new Date(`${values.date}T${values.time || "10:00"}:00`).toISOString();
+      values?.type === EEventType.HOLIDAY
+        ? parseLocalToIso(values?.date, "00:00")
+        : parseLocalToIso(values?.date, values?.time || "10:00");
 
     const endIso =
-      values.type === EEventType.HOLIDAY
-        ? new Date(`${values.date}T23:59:59`).toISOString()
-        : new Date(`${values.date}T${values.time || "10:00"}:00`).toISOString();
+      values?.type === EEventType.HOLIDAY
+        ? parseLocalToIso(values?.date, "23:59")
+        : parseLocalToIso(values.date, values.time || "10:00");
 
     createEventMutation.mutate(
       {
@@ -203,15 +209,21 @@ export function useCalendar() {
   const handleEditSubmit = (values: EventFormValues) => {
     if (!selectedEvent) return;
 
+    const parseLocalToIso = (dateStr: string, timeStr: string) => {
+      const [year, month, day] = dateStr?.split("-")?.map(Number);
+      const [hours, minutes] = timeStr?.split(":")?.map(Number);
+      return new Date(year, month - 1, day, hours, minutes)?.toISOString();
+    };
+
     const startIso =
-      values.type === EEventType.HOLIDAY
-        ? new Date(`${values.date}T00:00:00`).toISOString()
-        : new Date(`${values.date}T${values.time || "10:00"}:00`).toISOString();
+      values?.type === EEventType.HOLIDAY
+        ? parseLocalToIso(values?.date, "00:00")
+        : parseLocalToIso(values?.date, values?.time || "10:00");
 
     const endIso =
-      values.type === EEventType.HOLIDAY
-        ? new Date(`${values.date}T23:59:59`).toISOString()
-        : new Date(`${values.date}T${values.time || "10:00"}:00`).toISOString();
+      values?.type === EEventType.HOLIDAY
+        ? parseLocalToIso(values?.date, "23:59")
+        : parseLocalToIso(values?.date, values?.time || "10:00");
 
     updateEventMutation.mutate(
       {
