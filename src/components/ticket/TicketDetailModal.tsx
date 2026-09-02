@@ -9,6 +9,7 @@ import { formatLocalDateTime, isTicketLocked } from "@/utils/ticket";
 import { RootState } from "@/store";
 import { TicketInfoTab } from "./TicketInfoTab";
 import { TicketCommentsTab } from "./TicketCommentsTab";
+import { TicketAssetsTab } from "./TicketAssetsTab";
 import { Trash2, Share2, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { TicketReviewBanner } from "./TicketReviewBanner";
@@ -21,9 +22,9 @@ export function TicketDetailModal({
   onUpdateTicket,
   onDeleteTicket,
   onSubmitComment,
-  employees,
+  employees = [],
   projects = [],
-  isCommentsPending,
+  isCommentsPending = false,
   isDeleting = false,
   isUpdating = false,
 }: TicketDetailModalProps) {
@@ -32,11 +33,17 @@ export function TicketDetailModal({
   const [isUnlockOpen, setIsUnlockOpen] = useState(false);
   const [isRevisionConfirmOpen, setIsRevisionConfirmOpen] = useState(false);
   const [isApproveConfirmOpen, setIsApproveConfirmOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"info" | "comments">("info");
+  const [activeTab, setActiveTab] = useState<"info" | "comments" | "assets">(
+    "info",
+  );
 
   const unlockTicketMutation = useUnlockTicket();
 
   const isLocked = isTicketLocked(ticket);
+
+  const initialAssetIds = (ticket?.assets || [])?.map((a: any) =>
+    typeof a === "string" ? a : a?._id?.toString() || a?.name,
+  );
 
   const [formState, setFormState] = useState({
     status: ticket?.status || ETicketStatus.TODO,
@@ -46,6 +53,7 @@ export function TicketDetailModal({
     projectId: ticket?.project?._id || "",
     workTypeId: ticket?.workType?._id || "",
     checklist: ticket?.checklist || [],
+    assets: initialAssetIds,
     description: ticket?.description || "",
     title: ticket?.title || "",
     requiresReview: ticket?.requiresReview || false,
@@ -114,6 +122,7 @@ export function TicketDetailModal({
       formState.assigneeId !== (ticket?.assignee?._id || "") ||
       JSON.stringify(formState.checklist) !==
         JSON.stringify(ticket?.checklist || []) ||
+      JSON.stringify(formState.assets) !== JSON.stringify(initialAssetIds) ||
       (isAdmin &&
         (formState.projectId !== (ticket?.project?._id || "") ||
           formState.priority !== ticket?.priority ||
@@ -157,6 +166,7 @@ export function TicketDetailModal({
       status: formState.status,
       actualHours: formState.actualHours,
       checklist: formState.checklist,
+      assets: formState.assets,
     };
 
     if (isAdmin) {
@@ -171,9 +181,7 @@ export function TicketDetailModal({
       if (formState.priority) {
         updates.priority = formState.priority;
       }
-      if (formState.workTypeId) {
-        updates.workType = formState.workTypeId;
-      }
+      updates.workType = formState.workTypeId || undefined;
       updates.title = formState.title;
       updates.description = formState.description;
       updates.requiresReview = formState.requiresReview;
@@ -192,7 +200,7 @@ export function TicketDetailModal({
 
   const handleConfirmDelete = () => {
     if (ticket && onDeleteTicket) {
-      onDeleteTicket(ticket._id);
+      onDeleteTicket(ticket?._id);
       setIsDeleteConfirmOpen(false);
       onClose();
     }
@@ -296,8 +304,20 @@ export function TicketDetailModal({
                     {ticket.comments?.length || 0}
                   </span>
                 </button>
+                <button
+                  onClick={() => setActiveTab("assets")}
+                  className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 transition-all flex items-center gap-1.5 ${
+                    activeTab === "assets"
+                      ? "border-indigo-500 text-indigo-400"
+                      : "border-transparent text-slate-400 hover:text-slate-200"
+                  }`}>
+                  Assets
+                  <span className="px-1.5 py-0.5 rounded-full bg-slate-900 border border-slate-800 text-[10px] text-slate-400 font-semibold group-hover:text-slate-200">
+                    {formState.assets?.length || 0}
+                  </span>
+                </button>
               </div>
-              {hasChanges && activeTab === "info" && (
+              {hasChanges && (
                 <button
                   onClick={handleSave}
                   disabled={isUpdating}
@@ -308,7 +328,7 @@ export function TicketDetailModal({
             </div>
 
             <div className="mt-2 min-h-[600px]">
-              {activeTab === "info" ? (
+              {activeTab === "info" && (
                 <TicketInfoTab
                   ticket={ticket}
                   employees={employees}
@@ -318,11 +338,20 @@ export function TicketDetailModal({
                   formState={formState}
                   setFormValue={setFormValue}
                 />
-              ) : (
+              )}
+              {activeTab === "comments" && (
                 <TicketCommentsTab
                   ticket={ticket}
                   onSubmitComment={onSubmitComment}
                   isCommentsPending={isCommentsPending}
+                />
+              )}
+              {activeTab === "assets" && (
+                <TicketAssetsTab
+                  ticket={ticket}
+                  canEdit={canEdit}
+                  localAssetIds={formState.assets}
+                  setLocalAssetIds={(ids) => setFormValue("assets", ids)}
                 />
               )}
             </div>

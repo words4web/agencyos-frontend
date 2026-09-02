@@ -24,6 +24,7 @@ export const createTicketSchema = z
         }),
       )
       .optional(),
+    assets: z.array(z.string()).optional(),
   })
   .refine(
     (data) => {
