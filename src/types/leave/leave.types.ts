@@ -1,10 +1,11 @@
-import { ELeaveType } from "@/enums";
+import { ELeaveType, EUserRole } from "@/enums";
 
 export interface IUserMinInfo {
   _id: string;
   name: string;
   email: string;
   designation?: string;
+  role?: EUserRole;
 }
 
 export interface ILeave {
@@ -14,6 +15,7 @@ export interface ILeave {
   startDate: string;
   endDate: string;
   totalDays: number;
+  isHalfDay: boolean;
   reason: string;
   status: "pending" | "approved" | "rejected";
   lateNotice: boolean;
@@ -33,6 +35,7 @@ export type LeaveFormValues = {
   startDate: string;
   endDate: string;
   reason: string;
+  isHalfDay: boolean;
   lateNotice: boolean;
   isAuthorized: boolean;
   adminNote: string;
@@ -63,4 +66,16 @@ export interface LeaveFormProps {
   onSubmit: (values: LeaveFormValues) => void;
   isPending: boolean;
   onCancel: () => void;
+}
+
+export interface LeaveActionModalContentProps {
+  selectedLeave: ILeave | null;
+  actionType: "approve" | "reject" | null;
+  onClose: () => void;
+  onSubmit: (flags: {
+    lateNotice?: boolean;
+    isAuthorized?: boolean;
+    adminNote: string;
+  }) => void;
+  isPending: boolean;
 }

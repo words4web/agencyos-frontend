@@ -21,6 +21,7 @@ export const useLeaveForm = ({
     startDate: todayStr,
     endDate: todayStr,
     reason: "",
+    isHalfDay: false,
     lateNotice: false,
     isAuthorized: true,
     adminNote: "",
@@ -32,10 +33,10 @@ export const useLeaveForm = ({
   });
 
   const { control, setValue } = form;
-  const currentEmployeeId = useWatch({
-    control,
-    name: "employeeId",
-  });
+
+  const currentEmployeeId = useWatch({ control, name: "employeeId" });
+  const isHalfDay = useWatch({ control, name: "isHalfDay" });
+  const startDate = useWatch({ control, name: "startDate" });
 
   useEffect(() => {
     if (isAdmin) {
@@ -61,6 +62,12 @@ export const useLeaveForm = ({
     }
   }, [currentEmployeeId, isAdmin, myBalance, allBalances, setValue]);
 
+  useEffect(() => {
+    if (isHalfDay) {
+      setValue("endDate", startDate, { shouldValidate: true });
+    }
+  }, [isHalfDay, startDate, setValue]);
+
   const hasPaidBalance = (): boolean => {
     if (isAdmin) {
       if (!currentEmployeeId) return true;
@@ -82,6 +89,7 @@ export const useLeaveForm = ({
 
   return {
     form,
+    isHalfDay,
     hasPaidBalance: hasPaidBalance(),
     handleFormSubmit,
   };
