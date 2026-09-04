@@ -1,35 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Modal } from "@/components/Modal";
-import { ILeave } from "@/types/leave/leave.types";
-
-interface LeaveActionModalContentProps {
-  selectedLeave: ILeave | null;
-  actionType: "approve" | "reject" | null;
-  onClose: () => void;
-  onSubmit: (flags: {
-    lateNotice?: boolean;
-    isAuthorized?: boolean;
-    adminNote: string;
-  }) => void;
-  isPending: boolean;
-}
+import { LeaveActionModalContentProps } from "@/types/leave/leave.types";
 
 export const LeaveActionModalContent: React.FC<
   LeaveActionModalContentProps
 > = ({ selectedLeave, actionType, onClose, onSubmit, isPending }) => {
-  const [lateNoticeFlag, setLateNoticeFlag] = useState(false);
-  const [isAuthorizedFlag, setIsAuthorizedFlag] = useState(true);
+  const [lateNoticeFlag, setLateNoticeFlag] = useState(
+    selectedLeave?.lateNotice || false,
+  );
+  const [isAuthorizedFlag, setIsAuthorizedFlag] = useState(
+    selectedLeave?.isAuthorized ?? true,
+  );
   const [adminNote, setAdminNote] = useState("");
-
-  const prevLeaveIdRef = React.useRef<string | null>(null);
-  const currentLeaveId = selectedLeave?._id || null;
-
-  if (currentLeaveId !== prevLeaveIdRef.current) {
-    prevLeaveIdRef.current = currentLeaveId;
-    setLateNoticeFlag(selectedLeave?.lateNotice || false);
-    setIsAuthorizedFlag(selectedLeave?.isAuthorized ?? true);
-    setAdminNote("");
-  }
 
   if (!selectedLeave || !actionType) return null;
 

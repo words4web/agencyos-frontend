@@ -32,6 +32,7 @@ export const useApplyLeave = () => {
       startDate: string;
       endDate: string;
       reason: string;
+      isHalfDay?: boolean;
     }) => leaveService.applyLeave(payload),
     onSuccess: (res) => {
       toast.success(res.data?.message || "Leave applied successfully!");
@@ -52,7 +53,7 @@ export const useGetAllLeaves = (
     year?: number;
     month?: number;
   },
-  enabled = true
+  enabled = true,
 ) => {
   return useQuery({
     queryKey: ["allLeaves", filters],
@@ -84,6 +85,7 @@ export const useAdminCreateLeave = () => {
       startDate: string;
       endDate: string;
       reason: string;
+      isHalfDay?: boolean;
       lateNotice?: boolean;
       isAuthorized?: boolean;
       adminNote?: string;
@@ -105,7 +107,11 @@ export const useApproveLeave = () => {
   return useMutation({
     mutationFn: (variables: {
       leaveId: string;
-      payload: { lateNotice?: boolean; isAuthorized?: boolean; adminNote?: string };
+      payload: {
+        lateNotice?: boolean;
+        isAuthorized?: boolean;
+        adminNote?: string;
+      };
     }) => leaveService.approveLeave(variables.leaveId, variables.payload),
     onSuccess: (res) => {
       toast.success(res.data?.message || "Leave approved successfully!");
@@ -122,8 +128,10 @@ export const useApproveLeave = () => {
 export const useRejectLeave = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (variables: { leaveId: string; payload: { adminNote: string } }) =>
-      leaveService.rejectLeave(variables.leaveId, variables.payload),
+    mutationFn: (variables: {
+      leaveId: string;
+      payload: { adminNote: string };
+    }) => leaveService.rejectLeave(variables.leaveId, variables.payload),
     onSuccess: (res) => {
       toast.success(res.data?.message || "Leave rejected successfully!");
       queryClient.invalidateQueries({ queryKey: ["allLeaves"] });

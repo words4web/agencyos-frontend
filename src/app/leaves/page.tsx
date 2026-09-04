@@ -15,6 +15,7 @@ import { LeaveForm } from "@/components/leaves/LeaveForm";
 import { format } from "date-fns";
 import { useState } from "react";
 import { ILeave } from "@/types/leave/leave.types";
+import { EUserRole } from "@/enums";
 
 export default function LeavesPage() {
   const [selectedLeaveForDetails, setSelectedLeaveForDetails] =
@@ -68,7 +69,7 @@ export default function LeavesPage() {
 
       {!isAdmin ? (
         <div className="flex flex-col gap-6 max-w-6xl w-full mx-auto">
-          <LeaveStatsCards balance={myBalance} />
+          <LeaveStatsCards balance={myBalance} leaves={myLeaves} />
           <EmployeeLeaveTable
             leaves={myLeaves}
             isLoading={isMyLeavesLoading}
@@ -86,41 +87,50 @@ export default function LeavesPage() {
             onRowClick={(leave) => setSelectedLeaveForDetails(leave)}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-1 p-6 rounded-2xl bg-slate-900/40 border border-slate-850 flex flex-col gap-4">
-              <div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+            <div className="lg:col-span-1 p-5 rounded-2xl bg-slate-900/40 border border-slate-800 flex flex-col h-full min-h-[420px]">
+              <div className="pb-4 mb-3 border-b border-slate-800/80">
                 <h3 className="text-sm font-bold text-slate-200">
                   Leave Balance Summary
                 </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-xs text-slate-400 mt-1">
                   Paid leave consumption this year
                 </p>
               </div>
-              <div className="flex flex-col gap-3 overflow-y-auto max-h-[300px] pr-2">
+              <div className="flex-1 flex flex-col gap-2.5 overflow-y-auto max-h-[480px] pr-1.5 custom-scrollbar">
                 {allBalances?.length === 0 ? (
-                  <div className="text-center py-6 text-slate-500 text-xs">
-                    No records initialized.
+                  <div className="text-center py-8 text-slate-500 text-xs">
+                    No balance records initialized.
                   </div>
                 ) : (
-                  allBalances?.map((bal) => (
-                    <div
-                      key={bal?._id}
-                      className="p-3.5 rounded-xl bg-slate-950/40 border border-slate-850 flex items-center justify-between">
-                      <div>
-                        <span className="text-xs font-semibold text-slate-200">
-                          {typeof bal?.employee === "object"
-                            ? bal.employee?.name
-                            : "Employee"}
-                        </span>
-                        <span className="text-[10px] block text-slate-500 font-medium">
-                          Used: {bal?.used} / {bal?.totalAllowed} days
-                        </span>
+                  allBalances
+                    ?.filter((bal) => {
+                      const emp =
+                        typeof bal?.employee === "object" ? bal.employee : null;
+                      return emp?.role !== EUserRole.ADMIN;
+                    })
+                    ?.map((bal) => (
+                      <div
+                        key={bal?._id}
+                        className="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 flex items-center justify-between hover:border-slate-750 transition-colors">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-xs font-semibold text-slate-200">
+                            {typeof bal?.employee === "object"
+                              ? bal.employee?.name
+                              : "Employee"}
+                          </span>
+                          <span className="text-[11px] text-slate-400 font-medium">
+                            Used: {bal?.used} / {bal?.totalAllowed} days
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <span
+                            className={`text-xs font-bold ${bal?.remaining === 0 ? "text-rose-400" : "text-emerald-400"}`}>
+                            {bal?.remaining} Left
+                          </span>
+                        </div>
                       </div>
-                      <span className="text-xs font-extrabold text-emerald-400">
-                        {bal?.remaining} Left
-                      </span>
-                    </div>
-                  ))
+                    ))
                 )}
               </div>
             </div>
@@ -165,6 +175,7 @@ export default function LeavesPage() {
       </Modal>
 
       <LeaveActionModalContent
+        key={selectedLeaveForAction?._id || "none"}
         selectedLeave={selectedLeaveForAction}
         actionType={actionType}
         onClose={() => {

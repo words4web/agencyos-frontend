@@ -9,15 +9,18 @@ interface ResponseData<T> {
   message?: string;
 }
 
-
 export const leaveService = {
   applyLeave: async (payload: {
     leaveType: ELeaveType;
     startDate: string;
     endDate: string;
     reason: string;
+    isHalfDay?: boolean;
   }) => {
-    return axiosInstance.post<ResponseData<ILeave>>(API_ROUTES.LEAVES.BASE, payload);
+    return axiosInstance.post<ResponseData<ILeave>>(
+      API_ROUTES.LEAVES.BASE,
+      payload,
+    );
   },
 
   getMyLeaves: async () => {
@@ -27,7 +30,7 @@ export const leaveService = {
   getMyBalance: async (year?: number) => {
     return axiosInstance.get<ResponseData<ILeaveBalance>>(
       API_ROUTES.LEAVES.MY_BALANCE,
-      { params: { year } }
+      { params: { year } },
     );
   },
 
@@ -38,19 +41,24 @@ export const leaveService = {
     year?: number;
     month?: number;
   }) => {
-    return axiosInstance.get<ResponseData<ILeave[]>>(API_ROUTES.LEAVES.BASE, { params });
+    return axiosInstance.get<ResponseData<ILeave[]>>(API_ROUTES.LEAVES.BASE, {
+      params,
+    });
   },
 
   getAllBalances: async (year?: number) => {
-    return axiosInstance.get<ResponseData<ILeaveBalance[]>>(API_ROUTES.LEAVES.BALANCE, {
-      params: { year },
-    });
+    return axiosInstance.get<ResponseData<ILeaveBalance[]>>(
+      API_ROUTES.LEAVES.BALANCE,
+      {
+        params: { year },
+      },
+    );
   },
 
   getEmployeeBalance: async (userId: string, year?: number) => {
     return axiosInstance.get<ResponseData<ILeaveBalance>>(
       API_ROUTES.LEAVES.BALANCE_USER(userId),
-      { params: { year } }
+      { params: { year } },
     );
   },
 
@@ -60,27 +68,35 @@ export const leaveService = {
     startDate: string;
     endDate: string;
     reason: string;
+    isHalfDay?: boolean;
     lateNotice?: boolean;
     isAuthorized?: boolean;
     adminNote?: string;
   }) => {
-    return axiosInstance.post<ResponseData<ILeave>>(API_ROUTES.LEAVES.ADMIN_CREATE, payload);
+    return axiosInstance.post<ResponseData<ILeave>>(
+      API_ROUTES.LEAVES.ADMIN_CREATE,
+      payload,
+    );
   },
 
   approveLeave: async (
     leaveId: string,
-    payload: { lateNotice?: boolean; isAuthorized?: boolean; adminNote?: string }
+    payload: {
+      lateNotice?: boolean;
+      isAuthorized?: boolean;
+      adminNote?: string;
+    },
   ) => {
     return axiosInstance.patch<ResponseData<ILeave>>(
       API_ROUTES.LEAVES.APPROVE(leaveId),
-      payload
+      payload,
     );
   },
 
   rejectLeave: async (leaveId: string, payload: { adminNote: string }) => {
     return axiosInstance.patch<ResponseData<ILeave>>(
       API_ROUTES.LEAVES.REJECT(leaveId),
-      payload
+      payload,
     );
   },
 };

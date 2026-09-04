@@ -51,6 +51,7 @@ export const useLeavesDashboard = () => {
         startDate: values.startDate,
         endDate: values.endDate,
         reason: values.reason,
+        isHalfDay: values.isHalfDay,
       },
       {
         onSuccess: () => {
@@ -69,6 +70,7 @@ export const useLeavesDashboard = () => {
         startDate: values.startDate,
         endDate: values.endDate,
         reason: values.reason,
+        isHalfDay: values.isHalfDay,
         lateNotice: values.lateNotice,
         isAuthorized: values.isAuthorized,
         adminNote: values.adminNote,
