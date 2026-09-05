@@ -46,4 +46,7 @@ export const API_ROUTES = {
     BASE: "/api/work-types",
     DETAIL: (id: string) => `/api/work-types/${id}`,
   },
+  REPORTS: {
+    WEEKLY_PERFORMANCE: "/api/reports/weekly-performance",
+  },
 };

@@ -4,3 +4,14 @@ export function formatDateToYYYYMMDD(date: Date): string {
   const dd = String(date.getDate()).padStart(2, "0");
   return `${yyyy}-${mm}-${dd}`;
 }
+
+export function formatDate(dateString?: string, fallback = ""): string {
+  if (!dateString) return fallback;
+  const d = new Date(dateString);
+  if (isNaN(d.getTime())) return fallback;
+  return d.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
