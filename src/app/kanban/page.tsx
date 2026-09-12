@@ -19,6 +19,12 @@ export default function KanbanPage() {
     setFilterAssignee,
     filterPriority,
     setFilterPriority,
+    completedDatePreset,
+    setCompletedDatePreset,
+    completedCustomFrom,
+    setCompletedCustomFrom,
+    completedCustomTo,
+    setCompletedCustomTo,
     tickets,
     projects,
     employees,
@@ -69,6 +75,12 @@ export default function KanbanPage() {
         projects={projects}
         employees={employees}
         clearFilters={clearFilters}
+        completedDatePreset={completedDatePreset}
+        setCompletedDatePreset={setCompletedDatePreset}
+        completedCustomFrom={completedCustomFrom}
+        setCompletedCustomFrom={setCompletedCustomFrom}
+        completedCustomTo={completedCustomTo}
+        setCompletedCustomTo={setCompletedCustomTo}
       />
 
       {isLoadingTickets ? (

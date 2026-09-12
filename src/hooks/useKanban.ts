@@ -1,9 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ITicket, UpdateTicketPayload } from "@/types/ticket/ticket.types";
+import {
+  ITicket,
+  UpdateTicketPayload,
+  CompletedDatePreset,
+} from "@/types/ticket/ticket.types";
 import { EUserRole } from "@/enums";
 import {
   useGetTickets,
@@ -19,6 +23,49 @@ import {
   AddCommentFormValues,
 } from "@/schemas/ticket/ticket.schema";
 
+function resolveCompletedDateBounds(preset: CompletedDatePreset): {
+  completedFrom?: string;
+  completedTo?: string;
+} {
+  const now = new Date();
+
+  if (preset === "today") {
+    const from = new Date(now);
+    from.setHours(0, 0, 0, 0);
+    const to = new Date(now);
+    to.setHours(23, 59, 59, 999);
+    return { completedFrom: from.toISOString(), completedTo: to.toISOString() };
+  }
+
+  if (preset === "this_week") {
+    const dayOfWeek = now.getDay();
+    const diffToMonday = (dayOfWeek + 6) % 7;
+    const from = new Date(now);
+    from.setDate(now.getDate() - diffToMonday);
+    from.setHours(0, 0, 0, 0);
+    const to = new Date(from);
+    to.setDate(from.getDate() + 6);
+    to.setHours(23, 59, 59, 999);
+    return { completedFrom: from.toISOString(), completedTo: to.toISOString() };
+  }
+
+  if (preset === "this_month") {
+    const from = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+    const to = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+      999,
+    );
+    return { completedFrom: from.toISOString(), completedTo: to.toISOString() };
+  }
+
+  return {};
+}
+
 export function useKanban() {
   const router = useRouter();
   const { user } = useSelector((state: RootState) => state.auth);
@@ -28,11 +75,31 @@ export function useKanban() {
   const [filterAssignee, setFilterAssignee] = useState("");
   const [filterPriority, setFilterPriority] = useState("");
 
-  const { data: tickets = [], isLoading: isLoadingTickets } = useGetTickets({
-    projectId: filterProject,
-    assigneeId: filterAssignee,
-    priority: filterPriority,
-  });
+  const [completedDatePreset, setCompletedDatePreset] =
+    useState<CompletedDatePreset>("this_week");
+  const [completedCustomFrom, setCompletedCustomFrom] = useState("");
+  const [completedCustomTo, setCompletedCustomTo] = useState("");
+
+  const completedDateBounds = useMemo(() => {
+    if (completedDatePreset === "custom") {
+      return {
+        completedFrom: completedCustomFrom || undefined,
+        completedTo: completedCustomTo || undefined,
+      };
+    }
+    return resolveCompletedDateBounds(completedDatePreset);
+  }, [completedDatePreset, completedCustomFrom, completedCustomTo]);
+
+  const queryParams = {
+    ...(filterProject && { projectId: filterProject }),
+    ...(filterAssignee && { assigneeId: filterAssignee }),
+    ...(filterPriority && { priority: filterPriority }),
+    ...completedDateBounds,
+  };
+
+  const { data: tickets = [], isLoading: isLoadingTickets } =
+    useGetTickets(queryParams);
+
   const { data: projects = [] } = useGetProjects();
   const { data: employees = [] } = useGetEmployees(isAdmin);
 
@@ -144,6 +211,9 @@ export function useKanban() {
     setFilterProject("");
     setFilterAssignee("");
     setFilterPriority("");
+    setCompletedDatePreset("this_week");
+    setCompletedCustomFrom("");
+    setCompletedCustomTo("");
   };
 
   return {
@@ -154,6 +224,12 @@ export function useKanban() {
     setFilterAssignee,
     filterPriority,
     setFilterPriority,
+    completedDatePreset,
+    setCompletedDatePreset,
+    completedCustomFrom,
+    setCompletedCustomFrom,
+    completedCustomTo,
+    setCompletedCustomTo,
     tickets,
     projects,
     employees,

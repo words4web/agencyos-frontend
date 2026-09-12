@@ -1,15 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ticketService } from "./ticket.service";
 import {
+  GetTicketsParams,
   CreateTicketPayload,
   UpdateTicketPayload,
   AddCommentPayload,
 } from "@/types/ticket/ticket.types";
 
-export const useGetTickets = (
-  params?: { projectId?: string; assigneeId?: string; priority?: string },
-  enabled = true,
-) => {
+export const useGetTickets = (params?: GetTicketsParams, enabled = true) => {
   return useQuery({
     queryKey: ["tickets", params],
     queryFn: async () => {
@@ -91,6 +89,18 @@ export const useUnlockTicket = () => {
     }) => {
       return ticketService.unlockTicket(variables.ticketId, variables.payload);
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tickets"] });
+    },
+  });
+};
+
+export const useRequestUnlock = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (variables: { ticketId: string; reason: string }) =>
+      ticketService.requestUnlock(variables.ticketId, variables.reason),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tickets"] });
     },

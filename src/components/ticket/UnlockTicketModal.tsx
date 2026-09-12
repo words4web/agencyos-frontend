@@ -13,6 +13,7 @@ export function UnlockTicketModal({
   onClose,
   onUnlock,
   isUnlocking = false,
+  unlockRequestReason,
 }: UnlockTicketModalProps) {
   const getDefaultTomorrow = () => {
     const tomorrow = new Date();
@@ -51,6 +52,16 @@ export function UnlockTicketModal({
       size="max-w-lg"
       title="Unlock Ticket & Extend Deadline">
       <form onSubmit={handleSubmit} className="flex flex-col gap-5 pt-2">
+        {unlockRequestReason && (
+          <div className="flex flex-col gap-1.5 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20">
+            <p className="text-xs font-semibold text-amber-400">
+              Employee&apos;s Reason for Unlock Request
+            </p>
+            <p className="text-xs text-amber-200/80 leading-relaxed">
+              {unlockRequestReason}
+            </p>
+          </div>
+        )}
         <Input
           type="datetime-local"
           label={

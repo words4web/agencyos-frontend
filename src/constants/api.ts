@@ -19,6 +19,7 @@ export const API_ROUTES = {
     COMMENTS: (id: string) => `/api/tickets/${id}/comments`,
     DETAIL: (id: string) => `/api/tickets/${id}`,
     UNLOCK: (id: string) => `/api/tickets/${id}/unlock`,
+    REQUEST_UNLOCK: (id: string) => `/api/tickets/${id}/request-unlock`,
   },
   NOTIFICATIONS: {
     BASE: "/api/notifications",
