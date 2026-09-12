@@ -6,14 +6,13 @@ import {
   CreateTicketPayload,
   UpdateTicketPayload,
   AddCommentPayload,
+  GetTicketsParams,
 } from "@/types/ticket/ticket.types";
 
 export const ticketService = {
-  getTickets: async (params?: {
-    projectId?: string;
-    assigneeId?: string;
-    priority?: string;
-  }): Promise<AxiosResponse<{ success: boolean; data: ITicket[] }>> => {
+  getTickets: async (
+    params?: GetTicketsParams,
+  ): Promise<AxiosResponse<{ success: boolean; data: ITicket[] }>> => {
     return axiosInstance.get(API_ROUTES.TICKETS.BASE, { params });
   },
 
@@ -50,5 +49,14 @@ export const ticketService = {
     AxiosResponse<{ success: boolean; message?: string; data: ITicket }>
   > => {
     return axiosInstance.patch(API_ROUTES.TICKETS.UNLOCK(ticketId), payload);
+  },
+
+  requestUnlock: async (
+    ticketId: string,
+    reason: string,
+  ): Promise<AxiosResponse<{ success: boolean; message?: string }>> => {
+    return axiosInstance.post(API_ROUTES.TICKETS.REQUEST_UNLOCK(ticketId), {
+      reason,
+    });
   },
 };

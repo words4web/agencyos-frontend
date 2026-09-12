@@ -286,3 +286,14 @@ const canEdit =
   - Made Ticket Priority (`Low`, `Medium`, `High`) editable for Admins directly within Ticket Properties.
 - **Frontend Submission Guard & Smooth Scroll ([`TicketDetailModal.tsx`](frontend/src/components/ticket/TicketDetailModal.tsx))**:
   - If a user attempts to move a ticket to `IN_REVIEW` with uncompleted checklist items, the modal smoothly scrolls to `#deliverableChecklistSection` and displays a toast error message.
+
+### Ticket Unlock Request UI & Completed Date Range Filter
+
+- **Ticket Unlock Request Flow**:
+  - **Request Unlock Modal ([`RequestUnlockModal.tsx`](frontend/src/components/ticket/RequestUnlockModal.tsx))**: Modal for non-admin users to enter the reason why the deadline was missed when requesting an unlock.
+  - **Unlock Ticket Modal ([`UnlockTicketModal.tsx`](frontend/src/components/ticket/UnlockTicketModal.tsx))**: Extended for Admins to view the employee's submitted unlock reason in a dedicated highlight box while setting the new due date and penalty waiver.
+  - **Ticket Detail Modal ([`TicketDetailModal.tsx`](frontend/src/components/ticket/TicketDetailModal.tsx))**: Shows "Request Unlock" button for non-admins when a ticket is locked, transitioning to a disabled "⏳ Request Sent" badge once submitted.
+  - **API Services & Hooks ([`ticket.service.ts`](frontend/src/services/ticket/ticket.service.ts) / [`ticket.hooks.ts`](frontend/src/services/ticket/ticket.hooks.ts))**: Added `requestUnlock` service call and `useRequestUnlock` mutation hook with React Query ticket cache invalidation.
+- **Kanban Board Date Range Filter**:
+  - Filter logic in backend/frontend queries passes `completedFrom` and `completedTo` parameters to restrict date filtering to `COMPLETED` status tickets only, leaving active and in-progress tickets visible across all date selections.
+

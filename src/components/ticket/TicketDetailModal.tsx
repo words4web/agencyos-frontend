@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { Modal } from "@/components/Modal";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { UnlockTicketModal } from "./UnlockTicketModal";
+import { RequestUnlockModal } from "./RequestUnlockModal";
 import { TicketDetailModalProps } from "@/types/ticket/ticket.types";
 import { ETicketStatus, ETicketPriority, EUserRole } from "@/enums";
 import {
@@ -14,10 +15,13 @@ import { RootState } from "@/store";
 import { TicketInfoTab } from "./TicketInfoTab";
 import { TicketCommentsTab } from "./TicketCommentsTab";
 import { TicketAssetsTab } from "./TicketAssetsTab";
-import { Trash2, Share2, Lock } from "lucide-react";
+import { Trash2, Share2, Lock, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { TicketReviewBanner } from "./TicketReviewBanner";
-import { useUnlockTicket } from "@/services/ticket/ticket.hooks";
+import {
+  useUnlockTicket,
+  useRequestUnlock,
+} from "@/services/ticket/ticket.hooks";
 
 export function TicketDetailModal({
   ticket,
@@ -42,6 +46,9 @@ export function TicketDetailModal({
   );
 
   const unlockTicketMutation = useUnlockTicket();
+  const requestUnlockMutation = useRequestUnlock();
+
+  const [isRequestUnlockOpen, setIsRequestUnlockOpen] = useState(false);
 
   const isLocked = isTicketLocked(ticket);
 
@@ -267,11 +274,22 @@ export function TicketDetailModal({
                     Status changes are disabled until an Admin unlocks it.
                   </span>
                 </div>
-                {isAdmin && (
+                {isAdmin ? (
                   <button
                     onClick={() => setIsUnlockOpen(true)}
                     className="px-2.5 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 font-semibold transition-all shrink-0 ml-2">
                     Unlock Now
+                  </button>
+                ) : ticket?.unlockRequest ? (
+                  <span className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-800 text-slate-400 text-xs font-semibold shrink-0 ml-2">
+                    <Clock size={12} />
+                    Request Sent
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => setIsRequestUnlockOpen(true)}
+                    className="px-2.5 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 font-semibold transition-all shrink-0 ml-2">
+                    Request Unlock
                   </button>
                 )}
               </div>
@@ -409,6 +427,29 @@ export function TicketDetailModal({
         onClose={() => setIsUnlockOpen(false)}
         onUnlock={handleUnlockSubmit}
         isUnlocking={unlockTicketMutation.isPending}
+        unlockRequestReason={ticket?.unlockRequest?.reason}
+      />
+      <RequestUnlockModal
+        isOpen={isRequestUnlockOpen}
+        onClose={() => setIsRequestUnlockOpen(false)}
+        isSubmitting={requestUnlockMutation.isPending}
+        onSubmit={(reason) => {
+          if (!ticket) return;
+          requestUnlockMutation.mutate(
+            { ticketId: ticket._id, reason },
+            {
+              onSuccess: () => {
+                toast.success("Unlock request sent to Admin!");
+                setIsRequestUnlockOpen(false);
+              },
+              onError: (err: any) => {
+                toast.error(
+                  err?.response?.data?.message || "Failed to send request",
+                );
+              },
+            },
+          );
+        }}
       />
     </>
   );

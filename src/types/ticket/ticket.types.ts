@@ -8,6 +8,22 @@ import {
 } from "@/schemas/ticket/ticket.schema";
 import { IWorkType } from "../workType/workType.types";
 
+export type CompletedDatePreset =
+  | "today"
+  | "this_week"
+  | "this_month"
+  | "all_time"
+  | "custom";
+
+export interface GetTicketsParams {
+  projectId?: string;
+  assigneeId?: string;
+  status?: string;
+  priority?: string;
+  completedFrom?: string;
+  completedTo?: string;
+}
+
 export interface IChecklistItem {
   _id?: string;
   label: string;
@@ -50,6 +66,11 @@ export interface ITicket {
   waivedDeadlineCount?: number;
   revisionCount?: number;
   isDeleted?: boolean;
+  unlockRequest?: {
+    reason: string;
+    requestedAt: string;
+    requestedBy: string;
+  };
   createdAt: string;
 }
 
@@ -128,6 +149,12 @@ export interface KanbanFiltersProps {
   projects: IProject[];
   employees: IEmployee[];
   clearFilters: () => void;
+  completedDatePreset: CompletedDatePreset;
+  setCompletedDatePreset: (preset: CompletedDatePreset) => void;
+  completedCustomFrom: string;
+  setCompletedCustomFrom: (val: string) => void;
+  completedCustomTo: string;
+  setCompletedCustomTo: (val: string) => void;
 }
 
 export interface TicketCommentsProps {
@@ -146,6 +173,14 @@ export interface UnlockTicketModalProps {
   onClose: () => void;
   onUnlock: (newDueDate: string, waivePenalty: boolean) => void;
   isUnlocking?: boolean;
+  unlockRequestReason?: string;
+}
+
+export interface RequestUnlockModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (reason: string) => void;
+  isSubmitting?: boolean;
 }
 
 export interface TicketReviewBannerProps {
