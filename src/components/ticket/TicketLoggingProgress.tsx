@@ -41,8 +41,14 @@ export function TicketLoggingProgress({
       </div>
 
       <div className="flex flex-col gap-1">
-        <span className="text-[10px] uppercase font-bold text-slate-500 block mb-1">
-          Actual Time Spent
+        <span className="text-[10px] uppercase font-bold text-slate-500 block mb-1 flex items-center justify-between">
+          <span>
+            Actual Time Spent
+            {(localStatus === ETicketStatus.IN_REVIEW ||
+              localStatus === ETicketStatus.COMPLETED) && (
+              <span className="text-red-400 font-bold ml-1">* (Required)</span>
+            )}
+          </span>
         </span>
         {canEdit ? (
           <div className="relative w-full">
@@ -54,7 +60,13 @@ export function TicketLoggingProgress({
               onChange={(e) =>
                 setLocalActualHours(Math.max(0, Number(e.target.value)))
               }
-              className="w-full pl-3 pr-10 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-205 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 min-h-[28px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              className={`w-full pl-3 pr-10 py-1.5 rounded-lg bg-slate-900 border text-xs text-slate-205 focus:outline-none focus:ring-1 min-h-[28px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+                (localStatus === ETicketStatus.IN_REVIEW ||
+                  localStatus === ETicketStatus.COMPLETED) &&
+                (!localActualHours || Number(localActualHours) <= 0)
+                  ? "border-amber-500/60 focus:border-amber-500 focus:ring-amber-500"
+                  : "border-slate-800 focus:border-indigo-500 focus:ring-indigo-500"
+              }`}
             />
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-500 font-bold uppercase tracking-wider pointer-events-none">
               hrs

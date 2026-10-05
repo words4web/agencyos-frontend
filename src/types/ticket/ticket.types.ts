@@ -60,6 +60,7 @@ export interface ITicket {
   actualHours?: number;
   tags?: string[];
   startDate?: string;
+  completedAt?: string | null;
   isLocked?: boolean;
   requiresReview?: boolean;
   missedDeadlineCount?: number;
