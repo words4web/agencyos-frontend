@@ -173,6 +173,22 @@ export function TicketDetailModal({
       }
     }
 
+    if (
+      formState.status === ETicketStatus.IN_REVIEW ||
+      formState.status === ETicketStatus.COMPLETED
+    ) {
+      if (!formState.actualHours || Number(formState.actualHours) <= 0) {
+        toast.error(
+          `Actual time spent (hours) is required before moving ticket to ${
+            formState.status === ETicketStatus.IN_REVIEW
+              ? "In Review"
+              : "Completed"
+          }.`,
+        );
+        return;
+      }
+    }
+
     const updates: any = {
       status: formState.status,
       actualHours: formState.actualHours,
@@ -414,7 +430,19 @@ export function TicketDetailModal({
           isLoading={isUpdating}
           onConfirm={() => {
             if (ticket) {
-              onUpdateTicket(ticket._id, { status: ETicketStatus.COMPLETED });
+              const effectiveActualHours =
+                formState.actualHours || ticket.actualHours;
+              if (!effectiveActualHours || Number(effectiveActualHours) <= 0) {
+                toast.error(
+                  "Actual time spent (hours) is required before approving and completing this ticket. Please enter actual hours spent.",
+                );
+                setIsApproveConfirmOpen(false);
+                return;
+              }
+              onUpdateTicket(ticket._id, {
+                status: ETicketStatus.COMPLETED,
+                actualHours: Number(effectiveActualHours),
+              });
               setIsApproveConfirmOpen(false);
             }
           }}

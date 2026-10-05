@@ -12,6 +12,10 @@ export const createTicketSchema = z
     dueDate: z.string().optional(),
     storyPoints: z.number().int().positive().optional(),
     estimatedHours: z.number().positive().optional(),
+    actualHours: z
+      .number()
+      .positive("Actual hours must be greater than 0")
+      .optional(),
     tags: z.string().optional(),
     startDate: z.string().optional(),
     requiresReview: z.boolean().optional(),
@@ -36,6 +40,23 @@ export const createTicketSchema = z
     {
       message: "Due Date cannot be earlier than Start Date",
       path: ["dueDate"],
+    },
+  )
+  .refine(
+    (data) => {
+      if (
+        (data.status === ETicketStatus.IN_REVIEW ||
+          data.status === ETicketStatus.COMPLETED) &&
+        (!data.actualHours || data.actualHours <= 0)
+      ) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message:
+        "Actual hours spent is required for In Review or Completed status",
+      path: ["actualHours"],
     },
   );
 

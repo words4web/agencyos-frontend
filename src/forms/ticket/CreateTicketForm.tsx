@@ -74,6 +74,12 @@ export function CreateTicketForm({
     defaultValue: initialDates.startDate,
   });
 
+  const selectedStatus = useWatch({
+    control,
+    name: "status",
+    defaultValue: ETicketStatus.TODO,
+  });
+
   const selectedProjectId = useWatch({
     control,
     name: "project",
@@ -277,6 +283,27 @@ export function CreateTicketForm({
           error={errors?.estimatedHours?.message}
         />
       </div>
+
+      {(selectedStatus === ETicketStatus.IN_REVIEW ||
+        selectedStatus === ETicketStatus.COMPLETED) && (
+        <Input
+          id="actualHours"
+          label={
+            <span className="flex items-center gap-1">
+              Actual Hours Spent
+              <span className="text-red-400 font-bold">*</span>
+            </span>
+          }
+          type="number"
+          step="0.5"
+          placeholder="e.g. 8"
+          {...register("actualHours", {
+            valueAsNumber: true,
+            setValueAs: (v) => (v === "" ? undefined : Number(v)),
+          })}
+          error={errors?.actualHours?.message}
+        />
+      )}
 
       <Input
         id="tags"
