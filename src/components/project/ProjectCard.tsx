@@ -35,7 +35,8 @@ export function ProjectCard({
   onAllocateClick,
   onDeleteClick,
   onEditClick,
-}: ProjectCardProps) {
+  baseFilesUrl = "/admin/projects",
+}: ProjectCardProps & { baseFilesUrl?: string }) {
   const employees = project?.employees || [];
 
   const maxVisibleAvatars = 4;
@@ -94,12 +95,18 @@ export function ProjectCard({
       <div className="border-t border-slate-800/80 pt-2.5 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
           {employees.length === 0 ? (
-            <button
-              onClick={() => onAllocateClick(project)}
-              className="text-[11px] text-slate-500 hover:text-indigo-400 flex items-center gap-1 transition-colors">
-              <UserPlus size={12} />
-              <span>Assign team</span>
-            </button>
+            onAllocateClick ? (
+              <button
+                onClick={() => onAllocateClick(project)}
+                className="text-[11px] text-slate-500 hover:text-indigo-400 flex items-center gap-1 transition-colors">
+                <UserPlus size={12} />
+                <span>Assign team</span>
+              </button>
+            ) : (
+              <span className="text-[11px] text-slate-600 italic">
+                No team assigned
+              </span>
+            )
           ) : (
             <div className="flex items-center gap-1.5">
               <div className="flex items-center -space-x-2 overflow-hidden py-0.5">
@@ -121,18 +128,20 @@ export function ProjectCard({
                   </div>
                 )}
               </div>
-              <button
-                onClick={() => onAllocateClick(project)}
-                className="p-1 rounded-md text-slate-500 hover:text-indigo-400 hover:bg-slate-800/60 transition-colors"
-                title="Allocate members">
-                <UserPlus size={11} />
-              </button>
+              {onAllocateClick && (
+                <button
+                  onClick={() => onAllocateClick(project)}
+                  className="p-1 rounded-md text-slate-500 hover:text-indigo-400 hover:bg-slate-800/60 transition-colors"
+                  title="Allocate members">
+                  <UserPlus size={11} />
+                </button>
+              )}
             </div>
           )}
         </div>
 
         <Link
-          href={`/admin/projects/${project?._id}/files`}
+          href={`${baseFilesUrl}/${project?._id}/files`}
           className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 hover:text-white border border-indigo-500/20 hover:border-indigo-500/30 transition-all shadow-sm shrink-0">
           <FolderOpen size={12} />
           <span>Files</span>

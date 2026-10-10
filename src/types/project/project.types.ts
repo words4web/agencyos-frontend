@@ -88,11 +88,12 @@ export interface AddAssetModalProps {
 
 export interface ProjectCardProps {
   project: IProject;
-  onAllocateClick: (project: IProject) => void;
-  onAddAssetClick: (projectId: string) => void;
+  onAllocateClick?: (project: IProject) => void;
+  onAddAssetClick?: (projectId: string) => void;
   onEditAssetClick?: (projectId: string, asset: IProjectAsset) => void;
   onDeleteClick?: (projectId: string) => void;
   onEditClick?: (project: IProject) => void;
+  baseFilesUrl?: string;
 }
 
 export interface AllocateTeamModalProps {

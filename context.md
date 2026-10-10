@@ -305,15 +305,19 @@ const canEdit =
 - **Completion Timestamp (`completedAt`)**:
   - Frontend interfaces in [`ticket.types.ts`](frontend/src/types/ticket/ticket.types.ts) updated with optional `completedAt?: string | null` field for completed ticket timeline and reporting tracking.
 
-### Admin Projects Page & Compact ProjectCard Redesign
+### Admin & Employee Projects Pages & Compact ProjectCard Redesign
 
 - **Admin Projects Page ([`app/admin/projects/page.tsx`](frontend/src/app/admin/projects/page.tsx))**:
   - **Sleek Compact KPI Badges**: Replaced bulky stat cards with high-density pill badges (`Projects`, `Clients`, `Allocations`) that save significant vertical space.
   - **Integrated Search Toolbar**: Real-time multi-attribute search filtering by project title, client name, client email, description, and assigned team members, with project counter and a one-click "Clear" button.
   - **Safe Optional Chaining**: Enforced complete optional chaining across all project mappings and property lookups.
+- **Employee Projects Page ([`app/projects/page.tsx`](frontend/src/app/projects/page.tsx))**:
+  - Brought complete parity with the Admin UI, featuring the compact KPI summary pill badges (`Projects`, `Clients`, `Allocations`), real-time search toolbar with clear button, and matching empty/loading skeleton states.
+  - Replaced the custom card implementation with the shared, ultra-compact `<ProjectCard />` configured with `baseFilesUrl="/projects"`.
 - **Ultra-Compact Project Card ([`ProjectCard.tsx`](frontend/src/components/project/ProjectCard.tsx))**:
   - **Clean Single-Line Client Row**: Streamlined client name and email into an inline horizontal badge.
   - **Removed Redundancies**: Omitted long text descriptions and removed duplicate text name pills, keeping an elegant overlapping circular avatar stack with colored initial badges and `<Name> • <Designation>` tooltips.
-  - **Integrated Footer Row**: Consolidated team allocations and the `Files & Assets` link button into a single, compact footer bar.
+  - **Integrated Footer Row**: Consolidated team allocations and the `Files` link button into a single, compact footer bar.
+  - **Role Adaptability**: Added `baseFilesUrl` support (`/admin/projects` or `/projects`) and gracefully omitted admin-only action buttons (edit, delete, allocate) when rendered in employee view.
 - **Project Files View Scrolling Fix ([`app/projects/[projectId]/files/page.tsx`](frontend/src/app/projects/%5BprojectId%5D/files/page.tsx))**:
   - Added `overflow-y-auto` container and `pb-16` padding to ensure file explorer lists with large numbers of assets scroll smoothly to the very end.
