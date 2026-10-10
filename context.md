@@ -297,3 +297,23 @@ const canEdit =
 - **Kanban Board Date Range Filter**:
   - Filter logic in backend/frontend queries passes `completedFrom` and `completedTo` parameters to restrict date filtering to `COMPLETED` status tickets only, leaving active and in-progress tickets visible across all date selections.
 
+### Mandatory Actual Hours Validation & Completed Timestamp Tracking
+
+- **Mandatory `actualHours > 0` Validation**:
+  - Prevented moving a ticket to `IN_REVIEW` or `COMPLETED` if `actualHours` is missing or `0` across frontend forms ([`CreateTicketForm.tsx`](frontend/src/forms/ticket/CreateTicketForm.tsx)) and detail controls ([`TicketDetailModal.tsx`](frontend/src/components/ticket/TicketDetailModal.tsx), [`TicketLoggingProgress.tsx`](frontend/src/components/ticket/TicketLoggingProgress.tsx)).
+  - Surfaced prompt toast alerts guiding users to log their time before submitting for review or completion.
+- **Completion Timestamp (`completedAt`)**:
+  - Frontend interfaces in [`ticket.types.ts`](frontend/src/types/ticket/ticket.types.ts) updated with optional `completedAt?: string | null` field for completed ticket timeline and reporting tracking.
+
+### Admin Projects Page & Compact ProjectCard Redesign
+
+- **Admin Projects Page ([`app/admin/projects/page.tsx`](frontend/src/app/admin/projects/page.tsx))**:
+  - **Sleek Compact KPI Badges**: Replaced bulky stat cards with high-density pill badges (`Projects`, `Clients`, `Allocations`) that save significant vertical space.
+  - **Integrated Search Toolbar**: Real-time multi-attribute search filtering by project title, client name, client email, description, and assigned team members, with project counter and a one-click "Clear" button.
+  - **Safe Optional Chaining**: Enforced complete optional chaining across all project mappings and property lookups.
+- **Ultra-Compact Project Card ([`ProjectCard.tsx`](frontend/src/components/project/ProjectCard.tsx))**:
+  - **Clean Single-Line Client Row**: Streamlined client name and email into an inline horizontal badge.
+  - **Removed Redundancies**: Omitted long text descriptions and removed duplicate text name pills, keeping an elegant overlapping circular avatar stack with colored initial badges and `<Name> • <Designation>` tooltips.
+  - **Integrated Footer Row**: Consolidated team allocations and the `Files & Assets` link button into a single, compact footer bar.
+- **Project Files View Scrolling Fix ([`app/projects/[projectId]/files/page.tsx`](frontend/src/app/projects/%5BprojectId%5D/files/page.tsx))**:
+  - Added `overflow-y-auto` container and `pb-16` padding to ensure file explorer lists with large numbers of assets scroll smoothly to the very end.
