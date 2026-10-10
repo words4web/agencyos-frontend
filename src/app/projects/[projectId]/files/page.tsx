@@ -14,7 +14,7 @@ export default function EmployeeProjectFilesPage() {
 
   if (isLoading) {
     return (
-      <div className="flex h-[60vh] w-full items-center justify-center">
+      <div className="flex-1 flex items-center justify-center min-w-0 overflow-y-auto p-8">
         <Loader2 className="animate-spin text-indigo-500" size={32} />
       </div>
     );
@@ -22,7 +22,7 @@ export default function EmployeeProjectFilesPage() {
 
   if (error || !project) {
     return (
-      <div className="flex h-[60vh] w-full flex-col items-center justify-center text-center p-6">
+      <div className="flex-1 flex flex-col items-center justify-center text-center min-w-0 overflow-y-auto p-8">
         <p className="text-sm font-semibold text-red-400">
           Failed to load project files
         </p>
@@ -34,15 +34,17 @@ export default function EmployeeProjectFilesPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-      <Suspense
-        fallback={
-          <div className="flex h-[60vh] w-full items-center justify-center">
-            <Loader2 className="animate-spin text-indigo-500" size={32} />
-          </div>
-        }>
-        <FileExplorer project={project} />
-      </Suspense>
+    <div className="flex-1 flex flex-col min-w-0 overflow-y-auto p-6 md:p-8">
+      <div className="max-w-7xl mx-auto w-full pb-16">
+        <Suspense
+          fallback={
+            <div className="flex h-[60vh] w-full items-center justify-center">
+              <Loader2 className="animate-spin text-indigo-500" size={32} />
+            </div>
+          }>
+          <FileExplorer project={project} />
+        </Suspense>
+      </div>
     </div>
   );
 }
