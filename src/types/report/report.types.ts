@@ -1,138 +1,88 @@
-export interface TicketReportData {
-  _id: string;
-  title: string;
-  status: string;
-  priority: string;
-  dueDate?: string;
-  storyPoints?: number;
-  estimatedHours?: number;
-  actualHours?: number;
-  missedDeadlineCount?: number;
-  waivedDeadlineCount?: number;
-  revisionCount?: number;
-  requiresReview?: boolean;
-  checklist?: { isCompleted: boolean }[];
-  project?: { name: string };
-  workType?: { name: string };
+import { LucideIcon } from "lucide-react";
+
+export interface EmployeeProjectBreakdown {
+  name: string;
+  hours: number;
+  ticketCount: number;
 }
 
-export interface UserReportEntry {
+export interface EmployeePerformanceData {
   user: {
     id: string;
     name: string;
     email: string;
     role: string;
     designation: string;
-    slackId: string;
-    isActive?: boolean;
+    slackId?: string;
   };
-  ticketCount: number;
-  storyPoints?: number;
-  completionRate?: number;
-  byStatus?: {
-    completed: number;
-    in_review: number;
-    in_progress: number;
-    todo: number;
-  };
-  byPriority?: {
-    urgent: number;
-    high: number;
-    medium: number;
-    low: number;
-  };
-  estimatedHours?: number;
-  actualHours?: number;
-  missedDeadlines?: number;
-  overdueCount?: number;
-  revisionCount?: number;
-  checklistProgress?: {
-    done: number;
-    total: number;
-    rate: number | null;
-  };
-  tickets?: TicketReportData[];
-  _id?: string;
+  completedTickets: number;
+  actualHours: number;
+  avgHoursPerTicket: number;
+  revisionCount: number;
+  firstPassRate: number;
+  missedDeadlines: number;
+  waivedDeadlines: number;
+  projects: EmployeeProjectBreakdown[];
 }
 
-export interface WeeklyReportSummary {
+export interface WeeklyPerformanceSummary {
   totalTickets: number;
-  totalCompleted: number;
-  completionRate: number;
-  totalStoryPoints: number;
+  totalHours: number;
+  teamAvgHours: number;
+  totalRevisions: number;
+  firstPassRate: number;
   totalMissedDeadlines: number;
-  topPerformer: {
-    id: string;
-    name: string;
-    completedCount: number;
-  } | null;
+  activeProjectsCount: number;
 }
 
 export interface WeeklyPerformanceResponse {
   success: boolean;
   message: string;
   data: {
+    _id?: string;
     weekStart: string;
     weekEnd: string;
-    summary?: WeeklyReportSummary;
-    employees: UserReportEntry[];
+    summary: WeeklyPerformanceSummary;
+    employees: EmployeePerformanceData[];
   };
 }
 
-export interface ComputedReportStats {
-  byStatus: {
-    completed: number;
-    in_review: number;
-    in_progress: number;
-    todo: number;
+export interface ReportWeekItem {
+  _id: string;
+  weekStart: string;
+  weekEnd: string;
+  summary: {
+    totalTickets: number;
+    totalHours: number;
   };
-  byPriority: {
-    urgent: number;
-    high: number;
-    medium: number;
-    low: number;
-  };
-  totalMissed: number;
-  totalRevisions: number;
-  totalEstimated: number;
-  totalActual: number;
-  totalStoryPoints: number;
-  overdueCount: number;
-  completionRate: number;
-  checklistRate: number | null;
-  checklistTotal: number;
-  checklistDone: number;
 }
 
-export interface ReportSummaryStats {
-  totalTickets: number;
-  totalCompleted: number;
-  totalPoints: number;
-  totalMissed: number;
-  overallRate: number;
-  topPerformerName: string;
+export interface ReportWeeksResponse {
+  success: boolean;
+  message: string;
+  data: ReportWeekItem[];
 }
 
 export interface KpiCardConfig {
   label: string;
   value: string | number;
-  icon: import("lucide-react").LucideIcon;
+  subtext?: string;
+  icon: LucideIcon;
   iconColor: string;
   iconBg: string;
   valueColor?: string;
   isSpecial?: boolean;
 }
 
-export interface EmployeeCardProps {
-  entry: UserReportEntry;
-  isTop: boolean;
-  isExpanded: boolean;
-  onToggle: () => void;
+export interface KpiSummaryBannerProps {
+  summary?: WeeklyPerformanceSummary;
+  employeeCount: number;
 }
 
-export interface EmployeeBreakdownGridProps {
-  employees: UserReportEntry[];
-  topPerformerName?: string;
-  expandedCards: Record<string, boolean>;
-  onToggleExpand: (userId: string) => void;
+export interface EmployeePerformanceCardProps {
+  employee: EmployeePerformanceData;
+}
+
+export interface TeamComparisonTableProps {
+  employees: EmployeePerformanceData[];
 }

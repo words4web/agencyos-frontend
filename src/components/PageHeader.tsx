@@ -11,6 +11,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   subtitle,
   icon: Icon,
   action,
+  children,
 }) => {
   const dispatch = useDispatch();
   const ActionIcon = action?.icon;
@@ -37,6 +38,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
       </div>
 
       <div className="flex items-center gap-3">
+        {children}
         <NotificationCenter />
         {action && (
           <Button onClick={action.onClick} className="flex items-center gap-2">

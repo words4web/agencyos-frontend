@@ -49,5 +49,6 @@ export const API_ROUTES = {
   },
   REPORTS: {
     WEEKLY_PERFORMANCE: "/api/reports/weekly-performance",
+    WEEKS: "/api/reports/weeks",
   },
 };
