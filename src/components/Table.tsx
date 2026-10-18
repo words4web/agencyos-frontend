@@ -30,7 +30,7 @@ export function Table<T>({
 
   return (
     <div className="w-full rounded-md border border-slate-800/80 bg-slate-900/10 shadow-xl backdrop-blur-md">
-      <div className="overflow-x-visible">
+      <div className="overflow-x-auto">
         <table className="w-full border-collapse text-left text-sm text-white">
           <thead className="bg-slate-950/40 text-[9px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-850">
             <tr>

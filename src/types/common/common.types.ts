@@ -37,9 +37,10 @@ export interface PageHeaderProps {
     icon?: React.ComponentType<{ className?: string; size?: number }>;
     onClick: () => void;
   };
+  children?: React.ReactNode;
 }
 export interface Column<T> {
-  header: string;
+  header: React.ReactNode;
   accessor: (row: T) => React.ReactNode;
   className?: string;
 }
