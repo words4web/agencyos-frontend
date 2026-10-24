@@ -321,3 +321,8 @@ const canEdit =
   - **Role Adaptability**: Added `baseFilesUrl` support (`/admin/projects` or `/projects`) and gracefully omitted admin-only action buttons (edit, delete, allocate) when rendered in employee view.
 - **Project Files View Scrolling Fix ([`app/projects/[projectId]/files/page.tsx`](frontend/src/app/projects/%5BprojectId%5D/files/page.tsx))**:
   - Added `overflow-y-auto` container and `pb-16` padding to ensure file explorer lists with large numbers of assets scroll smoothly to the very end.
+
+### Reports Navigation & Page Deactivated
+
+- **Sidebar Navigation ([`Sidebar.tsx`](frontend/src/components/Sidebar.tsx))**: Commented out the `Reports` item in `menuItems` so it is hidden from the sidebar navigation.
+- **Reports Page ([`app/reports/page.tsx`](frontend/src/app/reports/page.tsx))**: Updated `ReportsPage` to return `null`.

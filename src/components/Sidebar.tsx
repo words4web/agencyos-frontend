@@ -66,12 +66,12 @@ export const Sidebar: React.FC = () => {
       icon: CheckSquare,
       visible: isAdmin,
     },
-    {
-      name: "Reports",
-      path: ROUTES.REPORTS,
-      icon: BarChart3,
-      visible: true,
-    },
+    // {
+    //   name: "Reports",
+    //   path: ROUTES.REPORTS,
+    //   icon: BarChart3,
+    //   visible: true,
+    // },
     {
       name: "Calendar",
       path: ROUTES.CALENDAR,

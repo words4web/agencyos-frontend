@@ -9,6 +9,8 @@ import { EmployeePerformanceCard } from "@/components/report/EmployeePerformance
 import { formatDate } from "@/utils/date";
 
 export default function ReportsPage() {
+  return null;
+
   const {
     loading,
     fetching,
