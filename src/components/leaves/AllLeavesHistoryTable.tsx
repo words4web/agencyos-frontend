@@ -84,17 +84,7 @@ export const AllLeavesHistoryTable = ({
         </p>
       </div>
       <Table
-        data={[
-          ...leaves,
-          ...leaves,
-          ...leaves,
-          ...leaves,
-          ...leaves,
-          ...leaves,
-          ...leaves,
-          ...leaves,
-          ...leaves,
-        ]}
+        data={leaves}
         columns={columns}
         onRowClick={onRowClick}
         maxHeight="max-h-[500px]"
