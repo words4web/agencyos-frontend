@@ -39,15 +39,15 @@ export function TicketProperties({
         Ticket Properties
       </h6>
 
-      <div className="flex items-center gap-2.5">
-        <div className="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/10 text-indigo-400 shrink-0">
-          <Folder size={14} />
-        </div>
-        <div className="flex flex-col min-w-0 flex-1">
-          <span className="text-[10px] uppercase font-bold text-slate-500">
-            Project
-          </span>
-          {canEditProject ? (
+      {canEditProject && (
+        <div className="flex items-center gap-2.5">
+          <div className="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/10 text-indigo-400 shrink-0">
+            <Folder size={14} />
+          </div>
+          <div className="flex flex-col min-w-0 flex-1">
+            <span className="text-[10px] uppercase font-bold text-slate-500">
+              Project
+            </span>
             <select
               value={localProjectId || ""}
               onChange={(e) => onUpdateProject?.(e.target.value)}
@@ -58,23 +58,19 @@ export function TicketProperties({
                 </option>
               ))}
             </select>
-          ) : (
-            <span className="text-xs font-semibold text-slate-200 truncate mt-0.5">
-              {ticket?.project?.name}
-            </span>
-          )}
+          </div>
         </div>
-      </div>
+      )}
 
-      <div className="flex items-center gap-2.5">
-        <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/10 text-emerald-400 shrink-0">
-          <User size={14} />
-        </div>
-        <div className="flex flex-col flex-1 min-w-0">
-          <span className="text-[10px] uppercase font-bold text-slate-500">
-            Assignee
-          </span>
-          {canEditAssignee ? (
+      {canEditAssignee && (
+        <div className="flex items-center gap-2.5">
+          <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/10 text-emerald-400 shrink-0">
+            <User size={14} />
+          </div>
+          <div className="flex flex-col flex-1 min-w-0">
+            <span className="text-[10px] uppercase font-bold text-slate-500">
+              Assignee
+            </span>
             <select
               value={localAssigneeId || ""}
               onChange={(e) => onUpdateAssignee?.(e.target.value)}
@@ -85,13 +81,9 @@ export function TicketProperties({
                 </option>
               ))}
             </select>
-          ) : (
-            <span className="text-xs font-semibold text-slate-200 truncate mt-0.5">
-              {ticket?.assignee?.name}
-            </span>
-          )}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="flex items-center gap-2.5">
         <div className="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/10 text-indigo-400 shrink-0">
