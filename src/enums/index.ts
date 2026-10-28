@@ -6,7 +6,6 @@ export enum EUserRole {
 export enum EProjectStatus {
   ACTIVE = "active",
   COMPLETED = "completed",
-  ARCHIVED = "archived",
 }
 
 export enum ETicketStatus {
@@ -50,4 +49,3 @@ export enum ELeaveType {
   PAID = "paid",
   UNPAID = "unpaid",
 }
-

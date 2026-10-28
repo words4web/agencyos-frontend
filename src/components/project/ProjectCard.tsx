@@ -1,13 +1,15 @@
 import {
   UserPlus,
-  Trash2,
   FolderOpen,
   Edit2,
   Building2,
   Mail,
   ArrowUpRight,
+  CheckCircle2,
+  RotateCcw,
 } from "lucide-react";
 import { ProjectCardProps } from "@/types/project/project.types";
+import { EProjectStatus } from "@/enums";
 import Link from "next/link";
 
 const AVATAR_COLORS = [
@@ -33,8 +35,8 @@ function getInitials(name?: string) {
 export function ProjectCard({
   project,
   onAllocateClick,
-  onDeleteClick,
   onEditClick,
+  onToggleStatusClick,
   baseFilesUrl = "/admin/projects",
 }: ProjectCardProps & { baseFilesUrl?: string }) {
   const employees = project?.employees || [];
@@ -43,6 +45,8 @@ export function ProjectCard({
   const visibleEmployees = employees.slice(0, maxVisibleAvatars);
   const remainingEmployeesCount = employees.length - maxVisibleAvatars;
 
+  const isCompleted = project?.status === EProjectStatus.COMPLETED;
+
   return (
     <div className="bg-slate-900/50 hover:bg-slate-900/70 border border-slate-800 hover:border-slate-700/80 rounded-2xl p-4 shadow-lg shadow-black/20 transition-all duration-200 flex flex-col justify-between gap-3 group">
       <div className="flex items-center justify-between gap-2">
@@ -50,10 +54,17 @@ export function ProjectCard({
           <h3 className="text-sm font-bold text-slate-100 group-hover:text-white transition-colors truncate">
             {project?.name}
           </h3>
-          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
-            <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
-            Active
-          </span>
+          {isCompleted ? (
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 shrink-0">
+              <span className="w-1 h-1 rounded-full bg-blue-400" />
+              Completed
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
+              <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
+              Active
+            </span>
+          )}
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
@@ -65,12 +76,20 @@ export function ProjectCard({
               <Edit2 size={12} />
             </button>
           )}
-          {onDeleteClick && (
+          {onToggleStatusClick && (
             <button
-              onClick={() => onDeleteClick(project?._id)}
-              className="p-1 rounded-lg bg-slate-950/80 border border-slate-800 text-slate-500 hover:text-red-400 hover:bg-red-950/30 hover:border-red-900/40 transition-colors shadow-sm"
-              title="Delete Project">
-              <Trash2 size={12} />
+              onClick={() => onToggleStatusClick(project)}
+              className={`p-1 rounded-lg bg-slate-950/80 border border-slate-800 transition-colors shadow-sm ${
+                isCompleted
+                  ? "text-slate-400 hover:text-emerald-400 hover:bg-emerald-950/30 hover:border-emerald-900/40"
+                  : "text-slate-400 hover:text-blue-400 hover:bg-blue-950/30 hover:border-blue-900/40"
+              }`}
+              title={isCompleted ? "Mark as Active" : "Mark as Completed"}>
+              {isCompleted ? (
+                <RotateCcw size={12} />
+              ) : (
+                <CheckCircle2 size={12} />
+              )}
             </button>
           )}
         </div>

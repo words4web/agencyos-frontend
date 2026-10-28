@@ -4,25 +4,29 @@ import { useState, useMemo } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { Plus, LayoutDashboard, Search, Briefcase, X } from "lucide-react";
 import { IProject as Project } from "@/types/project/project.types";
+import { EProjectStatus } from "@/enums";
 import {
   useGetProjects,
-  useDeleteProject,
+  useUpdateProject,
 } from "@/services/project/project.hooks";
+import { toast } from "sonner";
 import { useGetEmployees } from "@/services/employee/employee.hooks";
 import { ProjectCard } from "@/components/project/ProjectCard";
+import { ProjectFiltersHeader } from "@/components/project/ProjectFiltersHeader";
+import { ConfirmModal } from "@/components/ConfirmModal";
 import { CreateProjectModal } from "@/forms/project/CreateProjectModal";
 import { EditProjectModal } from "@/forms/project/EditProjectModal";
 import { AllocateTeamModal } from "@/forms/project/AllocateTeamModal";
 import { AddAssetModal } from "@/forms/project/AddAssetModal";
 import { EditAssetModal } from "@/forms/project/EditAssetModal";
 import { IProjectAsset } from "@/types/project/project.types";
-import { toast } from "sonner";
-import { ConfirmModal } from "@/components/ConfirmModal";
 
 export default function ProjectsPage() {
-  const { data: projects = [] } = useGetProjects();
+  const [statusFilter, setStatusFilter] = useState<string>(
+    EProjectStatus.ACTIVE,
+  );
+  const { data: projects = [] } = useGetProjects(statusFilter);
   const { data: employees = [] } = useGetEmployees();
-  const deleteProjectMutation = useDeleteProject();
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -33,9 +37,37 @@ export default function ProjectsPage() {
 
   const [editAsset, setEditAsset] = useState<IProjectAsset | null>(null);
   const [editProjectId, setEditProjectId] = useState<string>("");
-  const [projectToDeleteId, setProjectToDeleteId] = useState<string | null>(
-    null,
-  );
+  const [projectToToggleStatus, setProjectToToggleStatus] =
+    useState<Project | null>(null);
+
+  const updateProjectMutation = useUpdateProject();
+
+  const executeStatusUpdate = (
+    project: Project,
+    nextStatus: EProjectStatus,
+  ) => {
+    updateProjectMutation.mutate(
+      {
+        projectId: project._id,
+        payload: { status: nextStatus },
+      },
+      {
+        onSuccess: () => {
+          toast.success(
+            nextStatus === EProjectStatus.COMPLETED
+              ? `"${project.name}" marked as completed`
+              : `"${project.name}" marked as active`,
+          );
+          setProjectToToggleStatus(null);
+        },
+        onError: (err: any) => {
+          toast.error(
+            err?.response?.data?.message || "Failed to update project status",
+          );
+        },
+      },
+    );
+  };
 
   const stats = useMemo(() => {
     const totalProjects = projects?.length;
@@ -82,32 +114,8 @@ export default function ProjectsPage() {
     setSearchQuery("");
   };
 
-  const handleConfirmDeleteProject = () => {
-    if (!projectToDeleteId) return;
-    deleteProjectMutation.mutate(projectToDeleteId, {
-      onSuccess: () => {
-        toast.success("Project deleted successfully");
-        setProjectToDeleteId(null);
-      },
-      onError: (err: any) => {
-        toast.error(err?.response?.data?.message || "Failed to delete project");
-        setProjectToDeleteId(null);
-      },
-    });
-  };
-
   return (
     <>
-      <ConfirmModal
-        isOpen={!!projectToDeleteId}
-        title="Delete Project"
-        description="Are you sure you want to delete this project? This will permanently delete the project from AgencyOS and move its associated Google Drive folder to trash."
-        confirmLabel="Delete"
-        variant="danger"
-        isLoading={deleteProjectMutation.isPending}
-        onConfirm={handleConfirmDeleteProject}
-        onClose={() => setProjectToDeleteId(null)}
-      />
       <div className="max-w-6xl mx-auto space-y-6 pb-16">
         <PageHeader
           title="Project Settings"
@@ -144,46 +152,16 @@ export default function ProjectsPage() {
           </div>
         </div>
 
-        <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3.5 backdrop-blur-md flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
-          <div className="relative flex-1 w-full max-w-lg">
-            <Search
-              size={15}
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"
-            />
-            <input
-              type="text"
-              placeholder="Search projects, clients, emails, descriptions, team..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-8 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 p-0.5">
-                <X size={13} />
-              </button>
-            )}
-          </div>
-
-          <div className="flex items-center justify-between sm:justify-end gap-3 text-xs text-slate-500 shrink-0">
-            <span>
-              Showing
-              <strong className="text-slate-300 font-semibold">
-                {filteredProjects?.length}
-              </strong>
-              of {projects?.length} projects
-            </span>
-            {hasActiveFilters && (
-              <button
-                onClick={clearFilters}
-                className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1 transition-colors">
-                <X size={12} />
-                Clear
-              </button>
-            )}
-          </div>
-        </div>
+        <ProjectFiltersHeader
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          statusFilter={statusFilter}
+          onStatusFilterChange={setStatusFilter}
+          totalProjectsCount={projects?.length || 0}
+          filteredProjectsCount={filteredProjects?.length || 0}
+          hasActiveFilters={hasActiveFilters}
+          onClearFilters={clearFilters}
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {filteredProjects?.length === 0 ? (
@@ -231,8 +209,8 @@ export default function ProjectsPage() {
                   setEditProjectId(projectId);
                   setEditAsset(asset);
                 }}
-                onDeleteClick={(projectId) => setProjectToDeleteId(projectId)}
                 onEditClick={(project) => setProjectToEdit(project)}
+                onToggleStatusClick={setProjectToToggleStatus}
               />
             ))
           )}
@@ -272,6 +250,38 @@ export default function ProjectsPage() {
         }}
         projectId={editProjectId}
         asset={editAsset}
+      />
+
+      <ConfirmModal
+        isOpen={!!projectToToggleStatus}
+        onClose={() => setProjectToToggleStatus(null)}
+        onConfirm={() => {
+          if (projectToToggleStatus) {
+            const nextStatus =
+              projectToToggleStatus.status === EProjectStatus.COMPLETED
+                ? EProjectStatus.ACTIVE
+                : EProjectStatus.COMPLETED;
+            executeStatusUpdate(projectToToggleStatus, nextStatus);
+          }
+        }}
+        title={
+          projectToToggleStatus?.status === EProjectStatus.COMPLETED
+            ? "Reactivate Project"
+            : "Complete Project"
+        }
+        description={
+          projectToToggleStatus?.status === EProjectStatus.COMPLETED
+            ? `Are you sure you want to reactivate "${projectToToggleStatus?.name}"? It will move back into active workflows and team projects.`
+            : `Are you sure you want to mark "${projectToToggleStatus?.name}" as completed? It will move out of active workflows and into completed projects.`
+        }
+        confirmLabel={
+          projectToToggleStatus?.status === EProjectStatus.COMPLETED
+            ? "Reactivate Project"
+            : "Mark as Completed"
+        }
+        cancelLabel="Cancel"
+        isLoading={updateProjectMutation.isPending}
+        variant="primary"
       />
     </>
   );

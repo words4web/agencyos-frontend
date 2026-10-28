@@ -50,10 +50,11 @@ export interface CreateProjectPayload {
 }
 
 export interface UpdateProjectPayload {
-  name: string;
-  clientName: string;
-  clientEmail: string;
+  name?: string;
+  clientName?: string;
+  clientEmail?: string;
   description?: string;
+  status?: EProjectStatus;
 }
 
 export interface AssignEmployeesPayload {
@@ -91,9 +92,20 @@ export interface ProjectCardProps {
   onAllocateClick?: (project: IProject) => void;
   onAddAssetClick?: (projectId: string) => void;
   onEditAssetClick?: (projectId: string, asset: IProjectAsset) => void;
-  onDeleteClick?: (projectId: string) => void;
   onEditClick?: (project: IProject) => void;
+  onToggleStatusClick?: (project: IProject) => void;
   baseFilesUrl?: string;
+}
+
+export interface ProjectFiltersHeaderProps {
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+  statusFilter: string;
+  onStatusFilterChange: (status: string) => void;
+  totalProjectsCount: number;
+  filteredProjectsCount: number;
+  hasActiveFilters: boolean;
+  onClearFilters: () => void;
 }
 
 export interface AllocateTeamModalProps {

@@ -119,8 +119,8 @@ export function EditProjectModal({
             Description
           </label>
           <textarea
-            className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-sm"
-            rows={3}
+            className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-sm min-h-[140px] resize-y"
+            rows={6}
             placeholder="Provide a brief summary of the campaign and brand directives..."
             {...register("description")}
           />
