@@ -74,14 +74,6 @@ export const EmployeeLeaveTable = ({
     },
   ];
 
-  const actions = [
-    {
-      label: "View Details",
-      onClick: (leave: ILeave) => onRowClick(leave),
-      className: "text-slate-300 hover:text-slate-100",
-    },
-  ];
-
   return (
     <div className="flex flex-col gap-4">
       <div>
@@ -96,7 +88,6 @@ export const EmployeeLeaveTable = ({
       <Table
         data={leaves}
         columns={columns}
-        actions={actions}
         onRowClick={onRowClick}
         isLoading={isLoading}
         loadingMessage="Loading leave applications..."

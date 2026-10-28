@@ -59,4 +59,5 @@ export interface TableProps<T> {
   emptyMessage?: string;
   actions?: ActionMenuItem<T>[];
   onRowClick?: (row: T) => void;
+  maxHeight?: string;
 }

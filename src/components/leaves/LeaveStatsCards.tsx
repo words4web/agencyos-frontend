@@ -1,4 +1,4 @@
-import { CheckCircle2, AlertCircle, Info } from "lucide-react";
+import { Info } from "lucide-react";
 import { ILeave, ILeaveBalance } from "@/types/leave/leave.types";
 import { ELeaveType } from "@/enums";
 
@@ -47,9 +47,6 @@ export const LeaveStatsCards = ({
             </span>
           </h3>
         </div>
-        <div className="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400">
-          <CheckCircle2 size={16} />
-        </div>
       </div>
 
       <div className="p-4 rounded-xl bg-slate-900/20 border border-slate-800/80 flex items-center justify-between">
@@ -60,9 +57,6 @@ export const LeaveStatsCards = ({
           <h3 className="text-xl font-extrabold text-amber-400 mt-1">
             {unpaidLeaveDays} {unpaidLeaveDays === 1 ? "Day" : "Days"}
           </h3>
-        </div>
-        <div className="p-2.5 rounded-lg bg-amber-500/10 text-amber-400">
-          <AlertCircle size={16} />
         </div>
       </div>
     </div>

@@ -11,6 +11,7 @@ export function Table<T>({
   emptyMessage = "No records found.",
   actions = [],
   onRowClick,
+  maxHeight,
 }: TableProps<T>) {
   const [activeRowId, setActiveRowId] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -29,18 +30,28 @@ export function Table<T>({
   }, []);
 
   return (
-    <div className="w-full rounded-md border border-slate-800/80 bg-slate-900/10 shadow-xl backdrop-blur-md">
-      <div className="overflow-x-auto">
+    <div
+      className={`w-full rounded-md border border-slate-800/80 bg-slate-900/10 shadow-xl backdrop-blur-md relative ${
+        maxHeight ? `${maxHeight} overflow-y-auto custom-scrollbar` : ""
+      }`}>
+      <div className="w-full">
         <table className="w-full border-collapse text-left text-sm text-white">
-          <thead className="bg-slate-950/40 text-[9px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-850">
+          <thead
+            className={`bg-slate-950 text-[9px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800 ${
+              maxHeight ? "sticky top-0 z-20 shadow-md" : ""
+            }`}>
             <tr>
               {columns?.map((col, idx) => (
-                <th key={idx} className={`px-6 py-3.5 ${col?.className || ""}`}>
+                <th
+                  key={idx}
+                  className={`px-6 py-3.5 bg-slate-950 ${col?.className || ""}`}>
                   {col?.header}
                 </th>
               ))}
               {actions.length > 0 && (
-                <th className="px-6 py-3.5 text-right w-16">Actions</th>
+                <th className="px-6 py-3.5 text-right w-16 bg-slate-950">
+                  Actions
+                </th>
               )}
             </tr>
           </thead>
@@ -69,6 +80,8 @@ export function Table<T>({
             ) : (
               data?.map((row: any, rowIdx) => {
                 const rowKey = row?._id || rowIdx.toString();
+                const isLastRows = rowIdx >= data.length - 2;
+
                 return (
                   <tr
                     key={rowKey}
@@ -100,7 +113,11 @@ export function Table<T>({
                         {activeRowId === rowKey && (
                           <div
                             ref={dropdownRef}
-                            className="absolute right-6 mt-1.5 w-44 rounded-xl border border-slate-800 bg-slate-950 p-1 shadow-2xl z-50 animate-in fade-in slide-in-from-top-1 duration-200">
+                            className={`absolute right-6 w-44 rounded-xl border border-slate-800 bg-slate-950 p-1 shadow-2xl z-50 animate-in fade-in duration-150 ${
+                              isLastRows && data.length > 2
+                                ? "bottom-full mb-1"
+                                : "top-full mt-1"
+                            }`}>
                             {actions?.map((act, actIdx) => (
                               <button
                                 key={actIdx}

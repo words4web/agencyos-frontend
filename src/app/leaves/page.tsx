@@ -2,17 +2,18 @@
 
 import { PageHeader } from "@/components/PageHeader";
 import { Modal } from "@/components/Modal";
-import { CalendarDays, Plus } from "lucide-react";
+import { CalendarDays, Plus, Users, ArrowUpRight } from "lucide-react";
 import { useLeavesDashboard } from "@/hooks/useLeavesDashboard";
 
 import { LeaveStatsCards } from "@/components/leaves/LeaveStatsCards";
 import { EmployeeLeaveTable } from "@/components/leaves/EmployeeLeaveTable";
 import { PendingLeavesTable } from "@/components/leaves/PendingLeavesTable";
 import { AllLeavesHistoryTable } from "@/components/leaves/AllLeavesHistoryTable";
+import { StaffLeaveBalanceModal } from "@/components/modals/leaves/StaffLeaveBalanceModal";
+import { LeaveDetailsModal } from "@/components/modals/leaves/LeaveDetailsModal";
 import { LeaveActionModalContent } from "./LeaveActionModalContent";
 import { LeaveForm } from "@/components/leaves/LeaveForm";
 
-import { format } from "date-fns";
 import { useState } from "react";
 import { ILeave } from "@/types/leave/leave.types";
 import { EUserRole } from "@/enums";
@@ -20,6 +21,10 @@ import { EUserRole } from "@/enums";
 export default function LeavesPage() {
   const [selectedLeaveForDetails, setSelectedLeaveForDetails] =
     useState<ILeave | null>(null);
+  const [isBalanceModalOpen, setIsBalanceModalOpen] = useState(false);
+  const [adminLeaveTab, setAdminLeaveTab] = useState<"pending" | "history">(
+    "pending",
+  );
   const {
     isAdmin,
     isApplyModalOpen,
@@ -45,6 +50,10 @@ export default function LeavesPage() {
     handleAdminCreateLeave,
     handleActionSubmit,
   } = useLeavesDashboard();
+
+  const pendingLeavesCount =
+    allLeaves?.filter((l) => l?.status === "pending").length || 0;
+  const historyLeavesCount = allLeaves?.length || 0;
 
   return (
     <div className="flex-1 flex flex-col min-w-0 overflow-y-auto p-8 bg-slate-950">
@@ -77,71 +86,101 @@ export default function LeavesPage() {
           />
         </div>
       ) : (
-        <div className="flex flex-col gap-8 max-w-6xl w-full mx-auto">
-          <PendingLeavesTable
-            leaves={allLeaves}
-            onActionClick={(leave, type) => {
-              setSelectedLeaveForAction(leave);
-              setActionType(type);
-            }}
-            onRowClick={(leave) => setSelectedLeaveForDetails(leave)}
-          />
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-            <div className="lg:col-span-1 p-5 rounded-2xl bg-slate-900/40 border border-slate-800 flex flex-col h-full min-h-[420px]">
-              <div className="pb-4 mb-3 border-b border-slate-800/80">
-                <h3 className="text-sm font-bold text-slate-200">
-                  Leave Balance Summary
-                </h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  Paid leave consumption this year
-                </p>
+        <div className="flex flex-col gap-6 max-w-6xl w-full mx-auto">
+          <div className="p-5 rounded-2xl bg-gradient-to-r from-slate-900/80 via-slate-900/50 to-slate-900/30 border border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                <Users size={22} />
               </div>
-              <div className="flex-1 flex flex-col gap-2.5 overflow-y-auto max-h-[480px] pr-1.5 custom-scrollbar">
-                {allBalances?.length === 0 ? (
-                  <div className="text-center py-8 text-slate-500 text-xs">
-                    No balance records initialized.
-                  </div>
-                ) : (
-                  allBalances
-                    ?.filter((bal) => {
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-bold text-slate-100">
+                    Staff Leave Balances
+                  </h3>
+                  <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-500/15 text-blue-400 border border-blue-500/30">
+                    {allBalances?.filter((bal) => {
                       const emp =
                         typeof bal?.employee === "object" ? bal.employee : null;
                       return emp?.role !== EUserRole.ADMIN;
-                    })
-                    ?.map((bal) => (
-                      <div
-                        key={bal?._id}
-                        className="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 flex items-center justify-between hover:border-slate-750 transition-colors">
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-xs font-semibold text-slate-200">
-                            {typeof bal?.employee === "object"
-                              ? bal.employee?.name
-                              : "Employee"}
-                          </span>
-                          <span className="text-[11px] text-slate-400 font-medium">
-                            Used: {bal?.used} / {bal?.totalAllowed} days
-                          </span>
-                        </div>
-                        <div className="text-right">
-                          <span
-                            className={`text-xs font-bold ${bal?.remaining === 0 ? "text-rose-400" : "text-emerald-400"}`}>
-                            {bal?.remaining} Left
-                          </span>
-                        </div>
-                      </div>
-                    ))
-                )}
+                    }).length || 0}{" "}
+                    Employees
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Track annual paid leave quotas, usage, and remaining
+                  allowances
+                </p>
               </div>
             </div>
 
-            <div className="md:col-span-2">
+            <button
+              type="button"
+              onClick={() => setIsBalanceModalOpen(true)}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-750 text-slate-200 text-xs font-semibold border border-slate-700/70 hover:border-slate-600 transition-all duration-200 shadow-sm shrink-0">
+              <span>View All Balances</span>
+              <ArrowUpRight size={15} className="text-slate-400" />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2 border-b border-slate-800/80 pb-3">
+            <button
+              type="button"
+              onClick={() => setAdminLeaveTab("pending")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 ${
+                adminLeaveTab === "pending"
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "bg-slate-900/40 text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-slate-800/60"
+              }`}>
+              <span>Pending Requests</span>
+              <span
+                className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                  adminLeaveTab === "pending"
+                    ? "bg-blue-700/80 text-white"
+                    : pendingLeavesCount > 0
+                      ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                      : "bg-slate-800 text-slate-400"
+                }`}>
+                {pendingLeavesCount}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setAdminLeaveTab("history")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 ${
+                adminLeaveTab === "history"
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "bg-slate-900/40 text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-slate-800/60"
+              }`}>
+              <span>All Leaves History</span>
+              <span
+                className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                  adminLeaveTab === "history"
+                    ? "bg-blue-700/80 text-white"
+                    : "bg-slate-800 text-slate-400"
+                }`}>
+                {historyLeavesCount}
+              </span>
+            </button>
+          </div>
+
+          <div className="w-full">
+            {adminLeaveTab === "pending" ? (
+              <PendingLeavesTable
+                leaves={allLeaves}
+                onActionClick={(leave, type) => {
+                  setSelectedLeaveForAction(leave);
+                  setActionType(type);
+                }}
+                onRowClick={(leave) => setSelectedLeaveForDetails(leave)}
+              />
+            ) : (
               <AllLeavesHistoryTable
                 leaves={allLeaves}
                 isLoading={isAllLeavesLoading}
                 onRowClick={(leave) => setSelectedLeaveForDetails(leave)}
               />
-            </div>
+            )}
           </div>
         </div>
       )}
@@ -149,7 +188,8 @@ export default function LeavesPage() {
       <Modal
         isOpen={isApplyModalOpen}
         onClose={() => setIsApplyModalOpen(false)}
-        title="Apply for Leave">
+        title="Apply for Leave"
+        closeOnBackdropClick={false}>
         <LeaveForm
           isAdmin={false}
           myBalance={myBalance}
@@ -188,114 +228,16 @@ export default function LeavesPage() {
         }
       />
 
-      <Modal
-        isOpen={!!selectedLeaveForDetails}
+      <LeaveDetailsModal
+        leave={selectedLeaveForDetails}
         onClose={() => setSelectedLeaveForDetails(null)}
-        title="Leave Request Details">
-        {selectedLeaveForDetails && (
-          <div className="flex flex-col gap-4 text-sm text-slate-200">
-            <div className="grid grid-cols-2 gap-4 pb-2 border-b border-slate-800">
-              <div>
-                <span className="text-xs text-slate-400 block font-semibold uppercase">
-                  Employee
-                </span>
-                <span className="text-slate-100 font-medium">
-                  {typeof selectedLeaveForDetails?.employee === "object"
-                    ? selectedLeaveForDetails?.employee?.name
-                    : "Employee"}
-                </span>
-              </div>
-              <div>
-                <span className="text-xs text-slate-400 block font-semibold uppercase">
-                  Status
-                </span>
-                <span className="font-semibold">
-                  {selectedLeaveForDetails?.status === "approved" &&
-                    "🟢 Approved"}
-                  {selectedLeaveForDetails?.status === "rejected" &&
-                    "🔴 Rejected"}
-                  {selectedLeaveForDetails?.status === "pending" &&
-                    "🟡 Pending"}
-                </span>
-              </div>
-            </div>
+      />
 
-            <div className="grid grid-cols-2 gap-4 pb-2 border-b border-slate-800">
-              <div>
-                <span className="text-xs text-slate-400 block font-semibold uppercase">
-                  Dates
-                </span>
-                <span className="text-slate-100">
-                  {format(
-                    new Date(selectedLeaveForDetails?.startDate),
-                    "MMM dd, yyyy",
-                  )}{" "}
-                  –{" "}
-                  {format(
-                    new Date(selectedLeaveForDetails?.endDate),
-                    "MMM dd, yyyy",
-                  )}
-                </span>
-              </div>
-              <div>
-                <span className="text-xs text-slate-400 block font-semibold uppercase">
-                  Duration
-                </span>
-                <span className="text-slate-100 font-semibold">
-                  {selectedLeaveForDetails?.totalDays}{" "}
-                  {selectedLeaveForDetails?.totalDays === 1 ? "day" : "days"}
-                </span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 pb-2 border-b border-slate-800">
-              <div>
-                <span className="text-xs text-slate-400 block font-semibold uppercase">
-                  Leave Type
-                </span>
-                <span className="font-bold text-slate-100 uppercase">
-                  {selectedLeaveForDetails?.leaveType}
-                </span>
-              </div>
-              <div>
-                <span className="text-xs text-slate-400 block font-semibold uppercase">
-                  Authorized
-                </span>
-                <span className="text-slate-100">
-                  {selectedLeaveForDetails?.isAuthorized ? "✓ Yes" : "— No"}
-                </span>
-              </div>
-            </div>
-
-            <div className="pb-2 border-b border-slate-800">
-              <span className="text-xs text-slate-400 block font-semibold uppercase">
-                Reason
-              </span>
-              <p className="text-slate-100 mt-1 leading-relaxed bg-slate-900/50 p-3 rounded-lg border border-slate-850">
-                {selectedLeaveForDetails?.reason}
-              </p>
-            </div>
-
-            <div>
-              <span className="text-xs text-slate-400 block font-semibold uppercase">
-                Admin Remarks
-              </span>
-              <p className="text-slate-100 mt-1 leading-relaxed bg-slate-900/50 p-3 rounded-lg border border-slate-850">
-                {selectedLeaveForDetails?.adminNote || "No remarks provided."}
-              </p>
-            </div>
-
-            <div className="flex justify-end mt-4">
-              <button
-                type="button"
-                onClick={() => setSelectedLeaveForDetails(null)}
-                className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-sm transition-all duration-200">
-                Close
-              </button>
-            </div>
-          </div>
-        )}
-      </Modal>
+      <StaffLeaveBalanceModal
+        isOpen={isBalanceModalOpen}
+        onClose={() => setIsBalanceModalOpen(false)}
+        allBalances={allBalances}
+      />
     </div>
   );
 }
