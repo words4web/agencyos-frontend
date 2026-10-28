@@ -277,7 +277,33 @@ export function TicketDetailModal({
         onClose={handleClose}
         size="max-w-2xl"
         closeOnBackdropClick={false}
-        title={formState.title || (ticket ? ticket?.title : "")}
+        title={
+          <div className="flex items-center gap-2.5 min-w-0 max-w-full">
+            <div className="relative overflow-hidden whitespace-nowrap min-w-0 flex-1">
+              {(formState.title || ticket?.title || "").length > 35 ? (
+                <div className="animate-marquee hover:[animation-play-state:paused] flex gap-10">
+                  <span className="text-base font-bold text-slate-100 shrink-0">
+                    {formState.title || (ticket ? ticket?.title : "")}
+                  </span>
+                  <span
+                    className="text-base font-bold text-slate-100 shrink-0"
+                    aria-hidden="true">
+                    {formState.title || (ticket ? ticket?.title : "")}
+                  </span>
+                </div>
+              ) : (
+                <span className="text-base font-bold text-slate-100 truncate block">
+                  {formState.title || (ticket ? ticket?.title : "")}
+                </span>
+              )}
+            </div>
+            {ticket?.project?.name && (
+              <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 shrink-0">
+                {ticket.project.name}
+              </span>
+            )}
+          </div>
+        }
         headerActions={headerActions}>
         {ticket && (
           <div className="flex flex-col gap-5">
@@ -286,8 +312,8 @@ export function TicketDetailModal({
                 <div className="flex items-center gap-2.5">
                   <Lock size={16} className="text-amber-400 shrink-0" />
                   <span>
-                    <strong>Ticket Locked:</strong> The deadline has passed.
-                    Status changes are disabled until an Admin unlocks it.
+                    <strong>Locked:</strong> Deadline passed. Admin unlock
+                    required.
                   </span>
                 </div>
                 {isAdmin ? (

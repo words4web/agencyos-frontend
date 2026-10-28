@@ -8,11 +8,11 @@ import {
   ConfirmAssetUploadPayload,
 } from "@/types/project/project.types";
 
-export const useGetProjects = (enabled = true) => {
+export const useGetProjects = (status?: string, enabled = true) => {
   return useQuery({
-    queryKey: ["projects"],
+    queryKey: ["projects", status],
     queryFn: async () => {
-      const response = await projectService.getProjects();
+      const response = await projectService.getProjects(status);
       return response.data?.data || [];
     },
     enabled,

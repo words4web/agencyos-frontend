@@ -1,4 +1,3 @@
-import React from "react";
 import { format } from "date-fns";
 import { ILeave } from "@/types/leave/leave.types";
 import { LeaveStatusBadge } from "./LeaveStatusBadge";
@@ -75,14 +74,6 @@ export const AllLeavesHistoryTable = ({
     },
   ];
 
-  const actions = [
-    {
-      label: "View Details",
-      onClick: (leave: ILeave) => onRowClick(leave),
-      className: "text-slate-300 hover:text-slate-100",
-    },
-  ];
-
   return (
     <div className="flex flex-col gap-4">
       <div>
@@ -93,10 +84,20 @@ export const AllLeavesHistoryTable = ({
         </p>
       </div>
       <Table
-        data={leaves}
+        data={[
+          ...leaves,
+          ...leaves,
+          ...leaves,
+          ...leaves,
+          ...leaves,
+          ...leaves,
+          ...leaves,
+          ...leaves,
+          ...leaves,
+        ]}
         columns={columns}
-        actions={actions}
         onRowClick={onRowClick}
+        maxHeight="max-h-[500px]"
         isLoading={isLoading}
         loadingMessage="Loading leave history..."
         emptyMessage="No leave histories found."

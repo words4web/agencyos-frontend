@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { EProjectStatus } from "@/enums";
 
 export const createProjectSchema = z.object({
   name: z.string().min(1, "Project name is required"),
@@ -41,6 +42,7 @@ export const updateProjectSchema = z.object({
     .min(1, "Client email is required")
     .email("Invalid email format"),
   description: z.string().optional(),
+  status: z.nativeEnum(EProjectStatus).optional(),
 });
 
 export type UpdateProjectFormValues = z.infer<typeof updateProjectSchema>;

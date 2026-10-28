@@ -11,10 +11,12 @@ import {
 } from "@/types/project/project.types";
 
 export const projectService = {
-  getProjects: async (): Promise<
-    AxiosResponse<{ success: boolean; data: IProject[] }>
-  > => {
-    return axiosInstance.get(API_ROUTES.PROJECTS.BASE);
+  getProjects: async (
+    status?: string,
+  ): Promise<AxiosResponse<{ success: boolean; data: IProject[] }>> => {
+    return axiosInstance.get(API_ROUTES.PROJECTS.BASE, {
+      params: status ? { status } : undefined,
+    });
   },
 
   getProjectById: async (

@@ -79,3 +79,14 @@ export interface LeaveActionModalContentProps {
   }) => void;
   isPending: boolean;
 }
+
+export interface LeaveDetailsModalProps {
+  leave: ILeave | null;
+  onClose: () => void;
+}
+
+export interface StaffLeaveBalanceModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  allBalances?: ILeaveBalance[];
+}

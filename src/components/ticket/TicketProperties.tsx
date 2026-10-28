@@ -1,6 +1,7 @@
 import { TicketPropertiesProps } from "@/types/ticket/ticket.types";
 import { getPriorityBadge } from "@/utils/ticket";
 import { ETicketPriority } from "@/enums";
+import { SearchableDropdown } from "@/components/SearchableDropdown";
 import {
   Folder,
   User,
@@ -39,59 +40,52 @@ export function TicketProperties({
         Ticket Properties
       </h6>
 
-      <div className="flex items-center gap-2.5">
-        <div className="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/10 text-indigo-400 shrink-0">
-          <Folder size={14} />
-        </div>
-        <div className="flex flex-col min-w-0 flex-1">
-          <span className="text-[10px] uppercase font-bold text-slate-500">
-            Project
-          </span>
-          {canEditProject ? (
-            <select
+      {canEditProject && (
+        <div className="flex items-center gap-2.5">
+          <div className="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/10 text-indigo-400 shrink-0">
+            <Folder size={14} />
+          </div>
+          <div className="flex flex-col min-w-0 flex-1">
+            <SearchableDropdown
+              label="Project"
+              placeholder="Select Project"
+              searchPlaceholder="Search projects..."
+              options={
+                projects?.map((proj) => ({
+                  value: proj?._id,
+                  label: proj?.name,
+                })) || []
+              }
               value={localProjectId || ""}
-              onChange={(e) => onUpdateProject?.(e.target.value)}
-              className="text-xs font-semibold text-slate-200 bg-slate-900 border border-slate-800/80 rounded px-2 py-1 focus:outline-none focus:border-indigo-500 w-full mt-1 min-h-[28px]">
-              {projects?.map((proj) => (
-                <option key={proj?._id} value={proj?._id}>
-                  {proj?.name}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <span className="text-xs font-semibold text-slate-200 truncate mt-0.5">
-              {ticket?.project?.name}
-            </span>
-          )}
+              onChange={(val) => onUpdateProject?.(val)}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
-      <div className="flex items-center gap-2.5">
-        <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/10 text-emerald-400 shrink-0">
-          <User size={14} />
-        </div>
-        <div className="flex flex-col flex-1 min-w-0">
-          <span className="text-[10px] uppercase font-bold text-slate-500">
-            Assignee
-          </span>
-          {canEditAssignee ? (
-            <select
+      {canEditAssignee && (
+        <div className="flex items-center gap-2.5">
+          <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/10 text-emerald-400 shrink-0">
+            <User size={14} />
+          </div>
+          <div className="flex flex-col flex-1 min-w-0">
+            <SearchableDropdown
+              label="Assignee"
+              placeholder="Select Employee"
+              searchPlaceholder="Search employees..."
+              options={
+                employees?.map((emp) => ({
+                  value: emp?._id,
+                  label: emp?.name,
+                  subLabel: emp?.designation,
+                })) || []
+              }
               value={localAssigneeId || ""}
-              onChange={(e) => onUpdateAssignee?.(e.target.value)}
-              className="text-xs font-semibold text-slate-200 bg-slate-900 border border-slate-800/80 rounded px-2 py-1 focus:outline-none focus:border-indigo-500 w-full mt-1 min-h-[28px]">
-              {employees?.map((emp) => (
-                <option key={emp?._id} value={emp?._id}>
-                  {emp?.name} ({emp?.designation})
-                </option>
-              ))}
-            </select>
-          ) : (
-            <span className="text-xs font-semibold text-slate-200 truncate mt-0.5">
-              {ticket?.assignee?.name}
-            </span>
-          )}
+              onChange={(val) => onUpdateAssignee?.(val)}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="flex items-center gap-2.5">
         <div className="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/10 text-indigo-400 shrink-0">
@@ -148,25 +142,30 @@ export function TicketProperties({
           <CheckSquare size={14} />
         </div>
         <div className="flex flex-col min-w-0 flex-1">
-          <span className="text-[10px] uppercase font-bold text-slate-500">
-            Work Type
-          </span>
           {canEditWorkType ? (
-            <select
+            <SearchableDropdown
+              label="Work Type"
+              placeholder="None (Standard Ticket)"
+              searchPlaceholder="Search work types..."
+              options={[
+                { value: "", label: "None (Standard Ticket)" },
+                ...(workTypes?.map((wt) => ({
+                  value: wt?._id,
+                  label: wt?.name,
+                })) || []),
+              ]}
               value={localWorkTypeId || ""}
-              onChange={(e) => onUpdateWorkType?.(e.target.value)}
-              className="text-xs font-semibold text-purple-300 bg-slate-900 border border-slate-800/80 rounded px-2 py-1 focus:outline-none focus:border-indigo-500 w-full mt-1 min-h-[28px]">
-              <option value="">None (Standard Ticket)</option>
-              {workTypes?.map((wt) => (
-                <option key={wt?._id} value={wt?._id}>
-                  {wt?.name}
-                </option>
-              ))}
-            </select>
+              onChange={(val) => onUpdateWorkType?.(val)}
+            />
           ) : (
-            <span className="text-xs font-semibold text-purple-300 truncate mt-0.5">
-              {ticket?.workType?.name || "None (Standard)"}
-            </span>
+            <>
+              <span className="text-[10px] uppercase font-bold text-slate-500">
+                Work Type
+              </span>
+              <span className="text-xs font-semibold text-purple-300 truncate mt-0.5">
+                {ticket?.workType?.name || "None (Standard)"}
+              </span>
+            </>
           )}
         </div>
       </div>

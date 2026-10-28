@@ -8,7 +8,7 @@ import {
   UpdateTicketPayload,
   CompletedDatePreset,
 } from "@/types/ticket/ticket.types";
-import { EUserRole } from "@/enums";
+import { EUserRole, EProjectStatus } from "@/enums";
 import {
   useGetTickets,
   useCreateTicket,
@@ -100,7 +100,7 @@ export function useKanban() {
   const { data: tickets = [], isLoading: isLoadingTickets } =
     useGetTickets(queryParams);
 
-  const { data: projects = [] } = useGetProjects();
+  const { data: projects = [] } = useGetProjects(EProjectStatus.ACTIVE);
   const { data: employees = [] } = useGetEmployees(isAdmin);
 
   const createTicketMutation = useCreateTicket();
